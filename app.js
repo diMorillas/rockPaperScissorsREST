@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
 });
 
 // Ver el estado de la partida
-app.get('/consultarEstatPartida/codiPartida:JSON', (req, res) => res.send(alumnes));
+app.get('/consultarEstatPartida/', (req, res) => res.send(console.log(partida)));
 
 
 
