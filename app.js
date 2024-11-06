@@ -5,7 +5,7 @@
  * @version 1.0
  */
 
-/**Importación de modulos necesarios */
+/** Importación de modulos necesarios */
 
 const express = require('express');
 const path = require('path');
@@ -14,8 +14,8 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // Analiza las peticiones HTTP con JSON en el body
 
-// Array para almacenar datos de alumnos
-let partida = [{id:"12342454",jugadorUnoPuntuacion:1,JugadorDosPuntuacion:1,tiradaJugadorUno:'piedra',tiradaJugadorDos:'papel',estadoPartida:true}];
+// Array para almacenar datos de partida
+let partidas = [{ id: "12342454", jugadorUnoPuntuacion: 1, jugadorDosPuntuacion: 1, tiradaJugadorUno: 'piedra', tiradaJugadorDos: 'papel', estadoPartida: true }];
 
 /**
  * @params no tiene, el get nos devuelve el index.html con los datos de la partida
@@ -25,53 +25,53 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Ver el estado de la partida
-app.get('/consultarEstatPartida/', (req, res) => res.send(partida));
+// Ver el estado de todas las partidas
+app.get('/api/partida/', (req, res) => res.send(partidas));
 
-
-
-// Obtener un alumno específico por código
-app.get('/api/alumnes/:id', (req, res) => {
-    let alumne = alumnes.find(a => a.codi === parseInt(req.params.codi));
-    if (!alumne) return res.status(404).send('Alumne no trobat');
-    res.send(alumne);
+// Obtener una partida en específico
+app.get('/api/partida/:id', (req, res) => {
+    let partida = partidas.find(p => p.id === req.params.id);
+    if (!partida) return res.status(404).send('Partida no trobada');
+    res.send(partida);
 });
 
-// Crear un nuevo alumno
-app.post('/api/alumnes', (req, res) => {
-    let alumne = {
-        codi: parseInt(req.body.codi),
-        nom: req.body.nom,
-        nota: parseInt(req.body.nota)
+// Crear una nueva partida
+app.post('/api/partida', (req, res) => {
+    let partida = {
+        id: req.body.id,
+        jugadorUnoPuntuacion: 0,
+        jugadorDosPuntuacion: 0,
+        tiradaJugadorUno: '',
+        tiradaJugadorDos: '',
+        estadoPartida: true
     };
-    alumnes.push(alumne);
-    res.send(alumnes);
+    partidas.push(partida); // Agrega la nueva partida al array "partidas"
+    res.send("todo ok");
 });
 
-// Eliminar un alumno por código
-app.delete('/api/alumnes/:codi', (req, res) => {
-    let alumne = alumnes.find(a => a.codi === parseInt(req.params.codi));
-    if (!alumne) return res.status(404).send('Alumne no trobat');
+// Eliminar una partida por ID
+app.delete('/api/partida/:id', (req, res) => {
+    let partida = partidas.find(p => p.id === req.params.id);
+    if (!partida) return res.status(404).send('Partida no trobada');
     
-    let index = alumnes.indexOf(alumne);
-    alumnes.splice(index, 1);
-    res.send('Alumne esborrat');
+    let index = partidas.indexOf(partida);
+    partidas.splice(index, 1);
+    res.send('Partida esborrada');
 });
 
-// Modificar un alumno existente
-app.put('/api/alumnes/:codi', (req, res) => {
-    let alumne = alumnes.find(a => a.codi === parseInt(req.params.codi));
-    if (!alumne) return res.status(404).send('Alumne no trobat');
+// Modificar una partida existente
+app.put('/api/partida/:id', (req, res) => {
+    let partida = partidas.find(p => p.id === req.params.id);
+    if (!partida) return res.status(404).send('Partida no trobada');
 
-    let nouAlumne = {
-        codi: parseInt(req.body.codi),
-        nom: req.body.nom,
-        nota: parseInt(req.body.nota)
-    };
+    // Actualizar los datos de la partida
+    partida.jugadorUnoPuntuacion = req.body.jugadorUnoPuntuacion;
+    partida.jugadorDosPuntuacion = req.body.jugadorDosPuntuacion;
+    partida.tiradaJugadorUno = req.body.tiradaJugadorUno;
+    partida.tiradaJugadorDos = req.body.tiradaJugadorDos;
+    partida.estadoPartida = req.body.estadoPartida;
 
-    let index = alumnes.indexOf(alumne);
-    alumnes[index] = nouAlumne;
-    res.send('Alumne modificat');
+    res.send('Partida modificada');
 });
 
 // Inicio del servidor
