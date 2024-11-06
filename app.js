@@ -37,6 +37,7 @@ app.get('/api/partida/:id', (req, res) => {
 
 // Crear una nueva partida
 app.post('/api/partida', (req, res) => {
+    /* versión pau que no funciona
     let partida = {
         id: req.body.id,
         jugadorUnoPuntuacion: 0,
@@ -47,6 +48,19 @@ app.post('/api/partida', (req, res) => {
     };
     partidas.push(partida); // Agrega la nueva partida al array "partidas"
     res.send("todo ok");
+    */
+    //El colega propone esto
+    let partida = {
+        id: req.body.id || Math.random().toString(36).substring(7),  // Generar ID aleatorio si no se pasa
+        jugadorUnoPuntuacion: req.body.jugadorUnoPuntuacion || 0,
+        jugadorDosPuntuacion: req.body.jugadorDosPuntuacion || 0,
+        tiradaJugadorUno: req.body.tiradaJugadorUno || '',
+        tiradaJugadorDos: req.body.tiradaJugadorDos || '',
+        estadoPartida: req.body.estadoPartida !== undefined ? req.body.estadoPartida : true
+    };
+    
+    partidas.push(partida);  // Agrega la nueva partida al array "partidas"
+    res.status(201).send(partida);  // Retorna el objeto creado
 });
 
 // Eliminar una partida por ID
