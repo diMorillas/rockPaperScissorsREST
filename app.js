@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // Analiza las peticiones HTTP con JSON en el body
 
 // Array para almacenar datos de partida
-let partidas = [{ id: "12342454", jugadorUnoPuntuacion: 1, jugadorDosPuntuacion: 1, tiradaJugadorUno: 'piedra', tiradaJugadorDos: 'papel', estadoPartida: true }];
+var partidas = [{ id: "12342454", jugadorUnoPuntuacion: 1, jugadorDosPuntuacion: 1, tiradaJugadorUno: 'piedra', tiradaJugadorDos: 'papel', estadoPartida: true }];
 
 /**
  * @params no tiene, el get nos devuelve el index.html con los datos de la partida
@@ -37,26 +37,13 @@ app.get('/api/partida/:id', (req, res) => {
 
 // Crear una nueva partida
 app.post('/api/partida', (req, res) => {
-    /* versión pau que no funciona
-    let partida = {
-        id: req.body.id,
-        jugadorUnoPuntuacion: 0,
-        jugadorDosPuntuacion: 0,
-        tiradaJugadorUno: '',
-        tiradaJugadorDos: '',
-        estadoPartida: true
-    };
-    partidas.push(partida); // Agrega la nueva partida al array "partidas"
-    res.send("todo ok");
-    */
-    //El colega propone esto
     let partida = {
         id: req.body.id || Math.random().toString(36).substring(7),  // Generar ID aleatorio si no se pasa
-        jugadorUnoPuntuacion: req.body.jugadorUnoPuntuacion || 0,
-        jugadorDosPuntuacion: req.body.jugadorDosPuntuacion || 0,
-        tiradaJugadorUno: req.body.tiradaJugadorUno || '',
-        tiradaJugadorDos: req.body.tiradaJugadorDos || '',
-        estadoPartida: req.body.estadoPartida !== undefined ? req.body.estadoPartida : true
+        jugadorUnoPuntuacion: 0,
+        jugadorDosPuntuacion: 0,
+        tiradaJugadorUno:'',
+        tiradaJugadorDos:'',
+        estadoPartida:true
     };
     
     partidas.push(partida);  // Agrega la nueva partida al array "partidas"
