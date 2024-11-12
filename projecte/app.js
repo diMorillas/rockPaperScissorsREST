@@ -13,7 +13,7 @@ const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // Analiza las peticiones HTTP con JSON en el body
-app.use(express.static(path.join(__dirname, 'public'))); //Para decirle que los archivos estáticos están aquí
+app.use(express.static(path.join(__dirname, 'public')));//Para decirle que los archivos estáticos están aquí
 
 // Array para almacenar datos de partida
 var partidas = [{ id: "12342454", jugadorUnoPuntuacion: 1, jugadorDosPuntuacion: 1, tiradaJugadorUno: 'piedra', tiradaJugadorDos: 'papel', estadoPartida: true }];
@@ -24,6 +24,10 @@ var partidas = [{ id: "12342454", jugadorUnoPuntuacion: 1, jugadorDosPuntuacion:
  */
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/partida.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'partida.html'));
 });
 
 // Ver el estado de todas las partidas
@@ -48,7 +52,7 @@ app.post('/api/partida', (req, res) => {
     };
     
     partidas.push(partida);  // Agrega la nueva partida al array "partidas"
-    res.status(201).send(partida);  // Retorna el objeto creado
+    res.status(201).send(path.join(__dirname, 'partida.html'));  // Retorna el objeto creado
 });
 
 // Eliminar una partida por ID
