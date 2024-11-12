@@ -13,6 +13,7 @@ const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // Analiza las peticiones HTTP con JSON en el body
+app.use(express.static(path.join(__dirname, 'public'))); //Para decirle que los archivos estáticos están aquí
 
 // Array para almacenar datos de partida
 var partidas = [{ id: "12342454", jugadorUnoPuntuacion: 1, jugadorDosPuntuacion: 1, tiradaJugadorUno: 'piedra', tiradaJugadorDos: 'papel', estadoPartida: true }];
