@@ -16,7 +16,7 @@ app.use(express.json()); // Analiza las peticiones HTTP con JSON en el body
 app.use(express.static(path.join(__dirname, 'public')));//Para decirle que los archivos estáticos están aquí
 
 // Array para almacenar datos de partida
-var partidas = [{ id: "12342454", jugadorUnoPuntuacion: 1, jugadorDosPuntuacion: 1, tiradaJugadorUno: 'piedra', tiradaJugadorDos: 'papel', estadoPartida: true }];
+var partidas = [{ id: "1", jugadorUnoPuntuacion: 1, jugadorDosPuntuacion: 1, tiradaJugadorUno: 'piedra', tiradaJugadorDos: 'papel', estadoPartida: true }];
 
 /**
  * @params no tiene, el get nos devuelve el index.html con los datos de la partida
@@ -70,15 +70,38 @@ app.put('/api/partida/:id', (req, res) => {
     let partida = partidas.find(p => p.id === req.params.id);
     if (!partida) return res.status(404).send('Partida no trobada');
 
-    // Actualizar los datos de la partida
-    partida.jugadorUnoPuntuacion = req.body.jugadorUnoPuntuacion;
-    partida.jugadorDosPuntuacion = req.body.jugadorDosPuntuacion;
-    partida.tiradaJugadorUno = req.body.tiradaJugadorUno;
-    partida.tiradaJugadorDos = req.body.tiradaJugadorDos;
+    let movJ1 = req.body.tiradaJugadorUno;
+    let movJ2 = req.body.tiradaJugadorDos;
+
+    if (movJ1 === movJ2) {
+        console.log("empate");
+    } else if (movJ1 === "piedra" && movJ2 === "tijeras") {
+        partida.jugadorUnoPuntuacion += 1;
+        console.log("¡Ganaste! Piedra aplasta tijeras");
+    } else if (movJ1 === "tijeras" && movJ2 === "papel") {
+        partida.jugadorUnoPuntuacion += 1;
+        console.log("¡Ganaste! Tijeras cortan papel");
+    } else if (movJ1 === "papel" && movJ2 === "piedra") {
+        partida.jugadorUnoPuntuacion += 1;
+        console.log("¡Ganaste! Papel cubre piedra");
+    } else if (movJ1 === "tijeras" && movJ2 === "piedra") {
+        partida.jugadorDosPuntuacion += 1;
+        console.log("Perdiste. Piedra aplasta tijeras");
+    } else if (movJ1 === "papel" && movJ2 === "tijeras") {
+        partida.jugadorDosPuntuacion += 1;
+        console.log("Perdiste. Tijeras cortan papel");
+    } else if (movJ1 === "piedra" && movJ2 === "papel") {
+        partida.jugadorDosPuntuacion += 1;
+        console.log("Perdiste. Papel cubre piedra");
+    } else {
+        console.log("Opción no válida");
+    }
+
     partida.estadoPartida = req.body.estadoPartida;
 
-    res.send('Partida modificada');
+    res.send(`La partida ha sido modificada: puntuación es J1:${partida.jugadorUnoPuntuacion} J2:${partida.jugadorDosPuntuacion}`);
 });
+
 
 // Inicio del servidor
 app.listen(3000, () => console.log('Servidor iniciat a http://localhost:3000'));

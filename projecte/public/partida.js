@@ -1,6 +1,6 @@
 window.onload = () => {
     document.getElementById('codiPartida').addEventListener('click', () => {
-        let partidaId = document.getElementById('codiPartida').value;
+        let partidaId = document.getElementById('valorCodi').value;
          
         console.log(partidaId);
         fetch('/api/partida', {
@@ -13,7 +13,7 @@ window.onload = () => {
         .then(response => {
             if (response.ok) {
                 // Redireccionar a partida.html si la solicitud es exitosa
-                window.location.href = 'partida.html';
+                window.location.href = './partida.html';
             } else {
                 // Mostrar un mensaje de error si la solicitud falla
                 alert('Error al crear la partida');
