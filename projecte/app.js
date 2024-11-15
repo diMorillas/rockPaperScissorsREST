@@ -97,9 +97,17 @@ app.put('/api/partida/:id', (req, res) => {
         console.log("Opción no válida");
     }
 
-    partida.estadoPartida = req.body.estadoPartida;
+    if(partida.jugadorDosPuntuacion >=3|| partida.jugadorUnoPuntuacion >=3){
+        res.send("la partida ha acabado");
+        partida.estadoPartida = false;
+    }else{
+        res.send(`La partida ha sido modificada: puntuación es J1:${partida.jugadorUnoPuntuacion} J2:${partida.jugadorDosPuntuacion}`);
+        partida.estadoPartida = true;
+    }
 
-    res.send(`La partida ha sido modificada: puntuación es J1:${partida.jugadorUnoPuntuacion} J2:${partida.jugadorDosPuntuacion}`);
+
+
+
 });
 
 
