@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // Analiza las peticiones HTTP con JSON en el body
 app.use(express.static(path.join(__dirname, 'public')));//Para decirle que los archivos estáticos están aquí
 
-// Array para almacenar datos de partida
+// Array para almacenar datos de partida hay uno por defecto para hacer pruebas de desarrollo
 var partidas = [{ id: "1", jugadorUnoPuntuacion: 1, jugadorDosPuntuacion: 1, tiradaJugadorUno: 'piedra', tiradaJugadorDos: 'papel', turnoPartida: 1 }];
 
 /**
@@ -67,9 +67,16 @@ app.delete('/api/partida/:id', (req, res) => {
 });
 
 // Modificar una partida existente
+/**
+ * Toma como @param id el id de la partida. Es un re.param por lo que hay que pasarlo en la ruta de la aplicación
+ */
 app.put('/api/partida/:id', (req, res) => {
     let partida = partidas.find(p => p.id === req.params.id);
     if (!partida) return res.status(404).send('Partida no trobada');
+
+    if(partida.jugadorDosPuntuacion >=3|| partida.jugadorUnoPuntuacion >=3){
+        res.send("La partida ha acabado");
+    }else{
 
     let movJ1 = req.body.tiradaJugadorUno;
     let movJ2 = req.body.tiradaJugadorDos;
@@ -78,37 +85,34 @@ app.put('/api/partida/:id', (req, res) => {
         console.log("empate");
     } else if (movJ1 === "piedra" && movJ2 === "tijeras") {
         partida.jugadorUnoPuntuacion += 1;
+        partida.turnoPartida+=1;
         console.log("¡Ganaste! Piedra aplasta tijeras");
     } else if (movJ1 === "tijeras" && movJ2 === "papel") {
         partida.jugadorUnoPuntuacion += 1;
+        partida.turnoPartida+=1;
         console.log("¡Ganaste! Tijeras cortan papel");
     } else if (movJ1 === "papel" && movJ2 === "piedra") {
         partida.jugadorUnoPuntuacion += 1;
+        partida.turnoPartida+=1;
         console.log("¡Ganaste! Papel cubre piedra");
     } else if (movJ1 === "tijeras" && movJ2 === "piedra") {
         partida.jugadorDosPuntuacion += 1;
+        partida.turnoPartida+=1;
         console.log("Perdiste. Piedra aplasta tijeras");
     } else if (movJ1 === "papel" && movJ2 === "tijeras") {
         partida.jugadorDosPuntuacion += 1;
+        partida.turnoPartida+=1;
         console.log("Perdiste. Tijeras cortan papel");
     } else if (movJ1 === "piedra" && movJ2 === "papel") {
         partida.jugadorDosPuntuacion += 1;
+        partida.turnoPartida+=1;
         console.log("Perdiste. Papel cubre piedra");
     } else {
         console.log("Opción no válida");
     }
-
-    if(partida.jugadorDosPuntuacion >=3|| partida.jugadorUnoPuntuacion >=3){
-        res.send("la partida ha acabado");
-        partida.turnoPartida += 1;
-    }else{
-        res.send(`La partida ha sido modificada: puntuación es J1:${partida.jugadorUnoPuntuacion} J2:${partida.jugadorDosPuntuacion}`);
-        partida.turnoPartida += 1;
+    res.send(`La partida ha sido modificada: puntuación es J1:${partida.jugadorUnoPuntuacion} J2:${partida.jugadorDosPuntuacion}`);
+    //Mensaje de fin de partida
     }
-
-
-
-
 });
 
 
