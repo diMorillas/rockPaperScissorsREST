@@ -16,7 +16,7 @@ app.use(express.json()); // Analiza las peticiones HTTP con JSON en el body
 app.use(express.static(path.join(__dirname, 'public')));//Para decirle que los archivos estáticos están aquí
 
 // Array para almacenar datos de partida
-var partidas = [{ id: "1", jugadorUnoPuntuacion: 1, jugadorDosPuntuacion: 1, tiradaJugadorUno: 'piedra', tiradaJugadorDos: 'papel', estadoPartida: true }];
+var partidas = [{ id: "1", jugadorUnoPuntuacion: 1, jugadorDosPuntuacion: 1, tiradaJugadorUno: 'piedra', tiradaJugadorDos: 'papel', turnoPartida: 1 }];
 
 /**
  * @params no tiene, el get nos devuelve el index.html con los datos de la partida
@@ -26,9 +26,6 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.get('/partida.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'partida.html'));
-});
 
 // Ver el estado de todas las partidas
 app.get('/api/partida/', (req, res) => res.send(partidas));
@@ -41,6 +38,10 @@ app.get('/api/partida/:id', (req, res) => {
 });
 
 // Crear una nueva partida
+/**
+ * Como @param id 
+ * Se añade desde el cuerpo del mensaje. El resto de valores se inician en 0.
+ */
 app.post('/api/partida', (req, res) => {
     let partida = {
         id: req.body.id || Math.random().toString(36).substring(7),  // Generar ID aleatorio si no se pasa
@@ -48,7 +49,7 @@ app.post('/api/partida', (req, res) => {
         jugadorDosPuntuacion: 0,
         tiradaJugadorUno:'',
         tiradaJugadorDos:'',
-        estadoPartida:true
+        turnoPartida:1
     };
     
     partidas.push(partida);  // Agrega la nueva partida al array "partidas"
@@ -99,10 +100,10 @@ app.put('/api/partida/:id', (req, res) => {
 
     if(partida.jugadorDosPuntuacion >=3|| partida.jugadorUnoPuntuacion >=3){
         res.send("la partida ha acabado");
-        partida.estadoPartida = false;
+        partida.turnoPartida += 1;
     }else{
         res.send(`La partida ha sido modificada: puntuación es J1:${partida.jugadorUnoPuntuacion} J2:${partida.jugadorDosPuntuacion}`);
-        partida.estadoPartida = true;
+        partida.turnoPartida += 1;
     }
 
 
