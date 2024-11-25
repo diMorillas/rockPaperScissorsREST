@@ -44,7 +44,7 @@ app.get('/api/partida/:id', (req, res) => {
  */
 app.post('/api/partida', (req, res) => {
     let partida = {
-        id: req.body.id || Math.random().toString(36).substring(7),  // Generar ID aleatorio si no se pasa
+        id: req.body.id,  // Generar ID aleatorio si no se pasa
         jugadorUnoPuntuacion: 0,
         jugadorDosPuntuacion: 0,
         tiradaJugadorUno:'',
@@ -71,48 +71,46 @@ app.delete('/api/partida/:id', (req, res) => {
  * Toma como @param id el id de la partida. Es un re.param por lo que hay que pasarlo en la ruta de la aplicación
  */
 app.put('/api/partida/:id', (req, res) => {
-    let partida = partidas.find(p => p.id === req.params.id);
+    const partida = partidas.find(p => p.id === req.params.id);
     if (!partida) return res.status(404).send('Partida no trobada');
 
-    if(partida.jugadorDosPuntuacion >=3|| partida.jugadorUnoPuntuacion >=3){
-        res.send("La partida ha acabado");
-    }else{
+    if (partida.jugadorUnoPuntuacion >= 3 || partida.jugadorDosPuntuacion >= 3) {
+        return res.send("La partida ha acabado");
+    }
 
-    let movJ1 = req.body.tiradaJugadorUno;
-    let movJ2 = req.body.tiradaJugadorDos;
-
-    if (movJ1 === movJ2) {
-        console.log("empate");
-    } else if (movJ1 === "piedra" && movJ2 === "tijeras") {
-        partida.jugadorUnoPuntuacion += 1;
-        partida.turnoPartida+=1;
-        console.log("¡Ganaste! Piedra aplasta tijeras");
-    } else if (movJ1 === "tijeras" && movJ2 === "papel") {
-        partida.jugadorUnoPuntuacion += 1;
-        partida.turnoPartida+=1;
-        console.log("¡Ganaste! Tijeras cortan papel");
-    } else if (movJ1 === "papel" && movJ2 === "piedra") {
-        partida.jugadorUnoPuntuacion += 1;
-        partida.turnoPartida+=1;
-        console.log("¡Ganaste! Papel cubre piedra");
-    } else if (movJ1 === "tijeras" && movJ2 === "piedra") {
-        partida.jugadorDosPuntuacion += 1;
-        partida.turnoPartida+=1;
-        console.log("Perdiste. Piedra aplasta tijeras");
-    } else if (movJ1 === "papel" && movJ2 === "tijeras") {
-        partida.jugadorDosPuntuacion += 1;
-        partida.turnoPartida+=1;
-        console.log("Perdiste. Tijeras cortan papel");
-    } else if (movJ1 === "piedra" && movJ2 === "papel") {
-        partida.jugadorDosPuntuacion += 1;
-        partida.turnoPartida+=1;
-        console.log("Perdiste. Papel cubre piedra");
+    const { jugador, tirada } = req.body; // 'jugador' indica quién está jugando (1 o 2)
+    if (jugador === 1) {
+        partida.tiradaJugadorUno = tirada;
+    } else if (jugador === 2) {
+        partida.tiradaJugadorDos = tirada;
     } else {
-        console.log("Opción no válida");
+        return res.status(400).send('Jugador no válido');
     }
+
+    if (partida.tiradaJugadorUno && partida.tiradaJugadorDos) {
+        // Resolver el turno
+        const { tiradaJugadorUno: movJ1, tiradaJugadorDos: movJ2 } = partida;
+        if (movJ1 === movJ2) {
+            console.log("Empate");
+        } else if (
+            (movJ1 === "piedra" && movJ2 === "tijeras") ||
+            (movJ1 === "tijeras" && movJ2 === "papel") ||
+            (movJ1 === "papel" && movJ2 === "piedra")
+        ) {
+            partida.jugadorUnoPuntuacion++;
+            console.log("¡Jugador 1 gana este turno!");
+        } else {
+            partida.jugadorDosPuntuacion++;
+            console.log("¡Jugador 2 gana este turno!");
+        }
+
+        // Limpiar tiradas y avanzar turno
+        partida.tiradaJugadorUno = null;
+        partida.tiradaJugadorDos = null;
+        partida.turnoPartida++;
+    }
+
     res.send(`La partida ha sido modificada: puntuación es J1:${partida.jugadorUnoPuntuacion} J2:${partida.jugadorDosPuntuacion}`);
-    //Mensaje de fin de partida
-    }
 });
 
 

@@ -1,18 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPS</title>
-    <script src="./partida.js"></script>
+    <title>Juego de Piedra, Papel o Tijeras</title>
 </head>
 <body>
-    <h1>Piedra, Papel y Tijeras: The online Game</h1>
-    <label for="valorCodi">Codigo partida:</label><br>
-    <input type="text" name="valorCodi" id="valorCodi"><br>
-    <button id="codiPartida" name="codi">Game Starto!</button>
-    <br>
+    <h1>Juego de Piedra, Papel o Tijeras</h1>
+    <div>
+        <label for="partidaIdInput">ID de partida:</label>
+        <input type="text" id="partidaIdInput">
+        <button id="crearPartidaBtn">Crear Partida</button>
+    </div>
+    <p>Partida ID: <span id="partidaId">Ninguna</span></p>
+    <p>Puntuaciones: <span id="puntuacion">Ninguna</span></p>
+    <p id="resultado"></p>
 
-
+    <div id="controlesPartida">
+        <div class="jugador" id="jugador1">
+            <h3>Jugador 1</h3>
+            <button class="tiradaBtn" data-jugador="1" data-tirada="piedra">Piedra</button>
+            <button class="tiradaBtn" data-jugador="1" data-tirada="papel">Papel</button>
+            <button class="tiradaBtn" data-jugador="1" data-tirada="tijeras">Tijeras</button>
+        </div>
+        <div class="jugador" id="jugador2">
+            <h3>Jugador 2</h3>
+            <button class="tiradaBtn" data-jugador="2" data-tirada="piedra">Piedra</button>
+            <button class="tiradaBtn" data-jugador="2" data-tirada="papel">Papel</button>
+            <button class="tiradaBtn" data-jugador="2" data-tirada="tijeras">Tijeras</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
