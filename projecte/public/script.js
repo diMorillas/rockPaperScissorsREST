@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const jugador2Div = document.getElementById('jugador2');
 
     let partidaId = null;
-    let turno = 1;  // Empezamos con el turno del jugador 1
+    let turno = 1;
 
     // Crear partida
     crearPartidaBtn.addEventListener('click', () => {
@@ -32,7 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
             partidaIdSpan.textContent = partidaId;
             puntuacionSpan.textContent = 'Jugador 1: 0 - Jugador 2: 0';
             controlesPartida.style.display = 'block';
-            actualizarTurno(turno);  // Mostrar solo el jugador correspondiente
+            jugador1Div.style.display = 'block';  // Mostrar jugador 1 cuando empieza
+            jugador2Div.style.display = 'none';  // Ocultar jugador 2 al principio
         })
         .catch(error => {
             console.error(error);
@@ -49,6 +50,14 @@ document.addEventListener('DOMContentLoaded', () => {
             jugador1Div.style.display = 'none';
             jugador2Div.style.display = 'block';
         }
+    }
+
+    // Finalizar la partida
+    function finalizarPartida() {
+        jugador1Div.style.display = 'none';
+        jugador2Div.style.display = 'none';
+        // Puedes agregar un mensaje final, por ejemplo
+        resultadoP.textContent = '¡La partida ha terminado!';
     }
 
     // Realizar tiradas
@@ -82,9 +91,14 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 puntuacionSpan.textContent = `Jugador 1: ${data.jugadorUnoPuntuacion} - Jugador 2: ${data.jugadorDosPuntuacion}`;
 
-                // Cambiar turno
-                turno = turno % 2 + 1;  // Alternar entre 1 y 2
-                actualizarTurno(turno);
+                // Verificar si la partida ha terminado (por ejemplo, si algún jugador ha ganado)
+                if (data.jugadorUnoPuntuacion >=3 || data.jugadorDosPuntuacion >=3) {
+                    finalizarPartida();
+                } else {
+                    // Cambiar turno
+                    turno = turno % 2 + 1;  // Alternar entre 1 y 2
+                    actualizarTurno(turno);
+                }
             })
             .catch(error => {
                 console.error(error);
