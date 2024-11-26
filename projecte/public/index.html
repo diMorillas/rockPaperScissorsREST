@@ -13,11 +13,19 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 </head>
 <body class="text-center py-5 bg-photo">
+
+
+
+    <!--Botones Navegador Inicio-->
     <div id="muteButton" class="position-absolute top-0 start-0 p-2 bg-light border-bottom w-100">
         <button class="btn btn-light btn-sm">🔊</button>
         <button class="btn btn-light btn-sm">⚙️</button>
     </div>
     
+    <!--Botones Navegador Fin-->
+    
+    
+    <!--Contenedor Inicio-->
     <div class="container">
         <h1 class="mb-4 text-primary">Juego de Piedra, Papel o Tijeras</h1>
         <div class="mb-3">
@@ -60,8 +68,15 @@
             </div>
         </div>
     </div>
+    <!--Contenedor Fin-->
+
+    <!--Audio Inicio-->
     <audio src="./audio/background-music.mp3"></audio>
-    <script src="script.js"></script>
+    <!--Audio Fin-->
+
+    <script src="script.js"></script> <!--Lógica Juego-->
+
+    <!--Lógica Sonido Inicio-->
     <script>
     document.addEventListener("DOMContentLoaded", () => {
         const audio = document.querySelector("audio");
@@ -94,8 +109,6 @@
         });
     });
     </script>
-    <script>
-        
-    </script>
+    <!--Lógica Sonido Fin-->
 </body>
 </html>
