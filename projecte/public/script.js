@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Crear partida
     crearPartidaBtn.addEventListener('click', () => {
         const partidaIdInput = document.getElementById('partidaIdInput').value;
+        controlesPartida.style.display = "block";
 
         if (!partidaIdInput) {
             alert('Por favor, introduce un ID de partida válido.');
@@ -90,13 +91,11 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(data => {
                 puntuacionSpan.textContent = `Jugador 1: ${data.jugadorUnoPuntuacion} - Jugador 2: ${data.jugadorDosPuntuacion}`;
-
-                // Verificar si la partida ha terminado (por ejemplo, si algún jugador ha ganado)
                 if (data.jugadorUnoPuntuacion >=3 || data.jugadorDosPuntuacion >=3) {
                     finalizarPartida();
                 } else {
                     // Cambiar turno
-                    turno = turno % 2 + 1;  // Alternar entre 1 y 2
+                    turno = turno % 2 + 1;
                     actualizarTurno(turno);
                 }
             })
