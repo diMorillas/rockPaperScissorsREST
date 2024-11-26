@@ -47,9 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (turno === 1) {
             jugador1Div.style.display = 'block';
             jugador2Div.style.display = 'none';
+            console.log('Turno de jugador 1:')
         } else if (turno === 2) {
             jugador1Div.style.display = 'none';
             jugador2Div.style.display = 'block';
+            console.log('Turno de jugador 2:')
         }
     }
 
@@ -57,27 +59,30 @@ document.addEventListener('DOMContentLoaded', () => {
     function finalizarPartida() {
         jugador1Div.style.display = 'none';
         jugador2Div.style.display = 'none';
-        // Puedes agregar un mensaje final, por ejemplo
         resultadoP.textContent = '¡La partida ha terminado!';
+        console.log('Partida finalizada.');
     }
 
     // Realizar tiradas
+   
     document.querySelectorAll('.tiradaBtn').forEach(button => {
         button.addEventListener('click', () => {
             if (!partidaId) {
                 alert('Primero crea una partida.');
                 return;
             }
-
+    
             const jugador = button.dataset.jugador;
             const tirada = button.dataset.tirada;
-
+    
+            console.log(`Jugador ${jugador} ha tirado: ${tirada}`); // Muestra la tirada de cada jugador
+    
             fetch(`/api/partida/${partidaId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ jugador: parseInt(jugador), tirada }),
+                body: JSON.stringify({ jugador: parseInt(jugador), tirada }), 
             })
             .then(response => {
                 if (!response.ok) throw new Error('Error al realizar la tirada');
@@ -91,7 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(data => {
                 puntuacionSpan.textContent = `Jugador 1: ${data.jugadorUnoPuntuacion} - Jugador 2: ${data.jugadorDosPuntuacion}`;
-                if (data.jugadorUnoPuntuacion >=3 || data.jugadorDosPuntuacion >=3) {
+
+                // Verificar si la partida ha terminado (por ejemplo, si algún jugador ha ganado)
+                if (data.jugadorUnoPuntuacion >= 3 || data.jugadorDosPuntuacion >= 3) {
                     finalizarPartida();
                 } else {
                     // Cambiar turno
@@ -105,4 +112,5 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     });
+    
 });
