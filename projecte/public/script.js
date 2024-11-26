@@ -30,7 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Unirse a una partida
     unirsePartidaBtn.addEventListener('click', () => {
         const partidaIdInput = document.getElementById('partidaIdInput').value;
-        const jugador = turnoSelect.value; // El jugador que se une
+        const jugador = turnoSelect.value;
+        controlesPartida.style.display = "block";
 
         if (!partidaIdInput) {
             alert('Por favor, introduce un ID de partida válido.');
@@ -113,6 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Turno de jugador 2');
         }
     }
+    
 
     // Función para obtener el estado de la partida
     function getGameStatus() {
@@ -137,6 +139,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Función para realizar la tirada
     function makeMove(jugador, tirada) {
+        console.log(`Enviando datos: { jugador: ${jugador}, tirada: ${tirada} } a la partida ${partidaId}`);
+        
         fetch(`/api/partida/${partidaId}`, {
             method: 'PUT',
             headers: {
@@ -145,19 +149,26 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({ jugador: parseInt(jugador), tirada }),
         })
         .then(response => {
-            if (!response.ok) throw new Error('Error al realizar la tirada');
-            return response.text();
-        })
-        .then(data => {
-            resultadoP.textContent = data; // Mostrar mensaje del servidor
-            getGameStatus(); // Obtener estado de la partida
+            console.log(`Respuesta del servidor: ${response.status} - ${response.statusText}`);
+            
+            // Si la respuesta es OK, no devolvemos JSON, solo mostramos un mensaje en la consola
+            if (!response.ok) {
+                console.error('Error al realizar la tirada');
+                return;
+            }
+            
+            // Mostramos un mensaje en consola con el estado de la partida
+            console.log('Tirada realizada correctamente');
+            
+            // Llamar a getGameStatus() para actualizar la información de la partida
+            getGameStatus();
         })
         .catch(error => {
-            console.error(error);
+            console.error('Error al realizar la tirada:', error);
             alert('Error al realizar la tirada.');
         });
     }
-
+            
     // Función para verificar si el jugador puede hacer el movimiento
     function verificarTurno(jugador) {
         // Si es el turno del jugador 1 y se seleccionó "j1", o el turno del jugador 2 y se seleccionó "j2"
