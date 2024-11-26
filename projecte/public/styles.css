@@ -145,6 +145,11 @@ button:hover {
     margin-left: 420px;
 }
 
+.opacidad{
+    opacity: 0.45;
+    transition: ease 0.3;
+}
+
 
 /*Inputs*/
 
