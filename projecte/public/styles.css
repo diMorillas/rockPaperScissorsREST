@@ -59,6 +59,28 @@ button:hover {
     background-color: green;
 }
 
+#muteButton {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: px;
+    z-index: 1000;
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    margin-right: 10px;
+    justify-content: end;
+}
+
+#muteButton button {
+    margin-left: 10px;
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+
 /*Inputs*/
 
 input {

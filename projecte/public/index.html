@@ -13,6 +13,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 </head>
 <body class="text-center py-5 bg-photo">
+    <div id="muteButton" class="position-absolute top-0 start-0 p-2 bg-light border-bottom w-100">
+        <button class="btn btn-light btn-sm">🔊</button>
+    </div>
+    
     <div class="container">
         <h1 class="mb-4 text-primary">Juego de Piedra, Papel o Tijeras</h1>
         <div class="mb-3">
@@ -55,6 +59,39 @@
             </div>
         </div>
     </div>
+    <audio src="./audio/background-music.mp3"></audio>
     <script src="script.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const audio = document.querySelector("audio");
+        const muteButton = document.querySelector("#muteButton button");
+
+        // Función para reproducir el audio
+        const playAudio = () => {
+            audio.play().catch((error) => {
+                console.warn("La reproducción automática fue bloqueada:", error);
+            });
+        };
+
+        // Reproducir al cargar la página
+        playAudio();
+
+        // Si el navegador bloquea la reproducción, activa al hacer clic
+        document.body.addEventListener("click", () => {
+            playAudio();
+        }, { once: true });
+
+        // Manejador del botón de mute
+        muteButton.addEventListener("click", () => {
+            if (audio.muted) {
+                audio.muted = false;
+                muteButton.textContent = "🔊"; 
+            } else {
+                audio.muted = true;
+                muteButton.textContent = "🔇"; 
+            }
+        });
+    });
+    </script>
 </body>
 </html>
