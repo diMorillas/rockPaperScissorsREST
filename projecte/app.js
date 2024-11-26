@@ -13,7 +13,7 @@ const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // Analiza las peticiones HTTP con JSON en el body
-app.use(express.static(path.join(__dirname, 'public')));//Para decirle que los archivos estáticos están aquí
+app.use(express.static(path.join(__dirname, 'public'))); // Para decirle que los archivos estáticos están aquí
 
 // Array para almacenar datos de partida hay uno por defecto para hacer pruebas de desarrollo
 var partidas = [{ id: "1", jugadorUnoPuntuacion: 1, jugadorDosPuntuacion: 1, tiradaJugadorUno: 'piedra', tiradaJugadorDos: 'papel', turnoPartida: 1 }];
@@ -25,7 +25,6 @@ var partidas = [{ id: "1", jugadorUnoPuntuacion: 1, jugadorDosPuntuacion: 1, tir
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
-
 
 // Ver el estado de todas las partidas
 app.get('/api/partida/', (req, res) => res.send(partidas));
@@ -47,13 +46,45 @@ app.post('/api/partida', (req, res) => {
         id: req.body.id,  // Generar ID aleatorio si no se pasa
         jugadorUnoPuntuacion: 0,
         jugadorDosPuntuacion: 0,
-        tiradaJugadorUno:'',
-        tiradaJugadorDos:'',
-        turnoPartida:1
+        tiradaJugadorUno: '',
+        tiradaJugadorDos: '',
+        turnoPartida: 1,
+        jugadorUno: null, // Jugador 1
+        jugadorDos: null, // Jugador 2
+        estado: 'esperando' // Estado inicial
     };
-    
+
     partidas.push(partida);  // Agrega la nueva partida al array "partidas"
-    res.status(201).send(path.join(__dirname, 'partida.html'));  // Retorna el objeto creado
+    res.status(201).send(partida);  // Retorna el objeto creado
+});
+
+// Unirse a una partida existente
+app.post('/api/unirse', (req, res) => {
+    const { id, jugador } = req.body;
+
+    let partida = partidas.find(p => p.id === id);
+    if (!partida) return res.status(404).send('Partida no trobada');
+
+    if (partida.estado === 'enJuego') {
+        return res.status(400).send('La partida ya está en curso');
+    }
+
+    if (partida.jugadorUno && partida.jugadorDos) {
+        return res.status(400).send('La partida ya está llena');
+    }
+
+    if (!partida.jugadorUno) {
+        partida.jugadorUno = jugador;
+    } else {
+        partida.jugadorDos = jugador;
+    }
+
+    // Cambiar estado de la partida cuando ambos jugadores se han unido
+    if (partida.jugadorUno && partida.jugadorDos) {
+        partida.estado = 'enJuego'; // Cambia el estado a "enJuego"
+    }
+
+    res.send(partida); // Retorna los datos de la partida
 });
 
 // Eliminar una partida por ID
@@ -79,6 +110,11 @@ app.put('/api/partida/:id', (req, res) => {
     }
 
     const { jugador, tirada } = req.body; // 'jugador' indica quién está jugando (1 o 2)
+    
+    if (jugador !== partida.turnoPartida) {
+        return res.status(400).send('No es tu turno');
+    }
+
     if (jugador === 1) {
         partida.tiradaJugadorUno = tirada;
     } else if (jugador === 2) {
@@ -107,12 +143,11 @@ app.put('/api/partida/:id', (req, res) => {
         // Limpiar tiradas y avanzar turno
         partida.tiradaJugadorUno = null;
         partida.tiradaJugadorDos = null;
-        partida.turnoPartida++;
+        partida.turnoPartida = partida.turnoPartida === 1 ? 2 : 1; // Cambiar turno entre los jugadores
     }
 
     res.send(`La partida ha sido modificada: puntuación es J1:${partida.jugadorUnoPuntuacion} J2:${partida.jugadorDosPuntuacion}`);
 });
-
 
 // Inicio del servidor
 app.listen(3000, () => console.log('Servidor iniciat a http://localhost:3000'));
