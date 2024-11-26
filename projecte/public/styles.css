@@ -19,6 +19,7 @@ body {
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
+    
 }
 
 /*Contenedor*/
@@ -62,8 +63,8 @@ button:hover {
 #muteButton {
     position: fixed;
     top: 0;
-    left: 0;
-    right: px;
+    left: 100;
+    right:3px;
     z-index: 1000;
     width: 100%;
     padding: 10px;
@@ -80,6 +81,26 @@ button:hover {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+#msettings {
+    position: fixed;
+    top: 0;
+    left: 100;
+    right:20px;
+    z-index: 1000;
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    margin-right: 10px;
+    justify-content: end;
+}
+
+#settings button {
+    margin-left: 10px;
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
 
 /*Inputs*/
 
