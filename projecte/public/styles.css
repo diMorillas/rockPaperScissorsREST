@@ -1,3 +1,8 @@
+/*Globales*/
+*{
+    font-family: "Lexend Exa", sans-serif;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -9,6 +14,14 @@ body {
     height: 100vh;
 }
 
+.bg-photo {
+    background-image: url('./img/background.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/*Contenedor*/
 .container {
     background: #fff;
     padding: 20px;
@@ -17,6 +30,7 @@ body {
     text-align: center;
 }
 
+/*Botones*/
 button {
     padding: 10px 20px;
     margin: 5px;
@@ -32,6 +46,21 @@ button:hover {
     background-color: #0056b3;
 }
 
+.btnElemento{
+    background-color: greenyellow;
+    border: none;
+    border-radius: 50%;
+    width: 77px;
+    height: 77px;
+    font-size: 24px;
+}
+
+.btnElemento:hover{
+    background-color: green;
+}
+
+/*Inputs*/
+
 input {
     padding: 10px;
     margin: 10px 0;
@@ -40,8 +69,13 @@ input {
     width: calc(100% - 24px);
 }
 
+/*Textos*/
 p {
     font-size: 18px;
+}
+
+#resultado{
+    font-weight: 700px;
 }
 
 .resultado {
@@ -49,6 +83,11 @@ p {
     font-size: 20px;
     font-weight: bold;
     color: #333;
+}
+
+.jugadorTexto{
+    font-weight: 700;
+
 }
 
 
