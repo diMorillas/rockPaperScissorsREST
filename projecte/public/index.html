@@ -33,7 +33,8 @@
 
     <!--Panel de Ajustes Background Inicio-->
     <div class="container-ajustes" id="container-ajustes">
-        <h1 style="text-align: center; margin-top: 50px;">Cambiar Fondo De Pantalla: <span id="siguiente-ajustes">▶️</span></h1>
+        <h1 style="text-align: center; margin-top: 50px;">Cambiar Fondo De Pantalla: <span
+                id="siguiente-ajustes">▶️</span></h1>
         <br><br><br>
         <div class="images-container">
             <img src="./img/background.png" class="background-img" id="img1">
@@ -47,7 +48,8 @@
 
     <!--Panel de Ajustes Sonido Inicio-->
     <div class="container-ajustes-sonido" id="container-ajustes-sonido" style="display: none;">
-        <h1 style="text-align: center; margin-top: 50px;"><span id="atras-ajustes">◀️</span>Cambiar Sonido De Pantalla:</h1>
+        <h1 style="text-align: center; margin-top: 50px;"><span id="atras-ajustes">◀️</span>Cambiar Sonido De Pantalla:
+        </h1>
         <br><br><br>
         <div class="images-container-ajustes" style="text-align: center;">
             <button class="boton-sonido">I have no enemies</button>
@@ -56,7 +58,7 @@
             <br>
             <button class="boton-sonido">Dandadan Op</button>
             <br>
-            <button class="boton-sonido">Im still standing</button>
+            <button class="boton-sonido">Sonne - Lofi Version</button>
         </div>
     </div>
     <!--Panel de Ajustes Sonido Fin-->
@@ -115,7 +117,10 @@
     <!--Contenedor Fin-->
 
     <!--Audio Inicio-->
-    <audio src="./audio/background-music.mp3"></audio>
+    <audio id="audio1" src="./audio/no_enemies.mp3"></audio>
+    <audio id="audio2" src="./audio/cyberpunk.mp3"></audio>
+    <audio id="audio3" src="./audio/dandadan.mp3"></audio>
+    <audio id="audio4" src="./audio/sonne.mp3"></audio>
     <!--Audio Fin-->
 
     <script src="script.js"></script> <!--Lógica Juego-->
@@ -123,36 +128,64 @@
     <!--Lógica Sonido Inicio-->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const audio = document.querySelector("audio");
-            const muteButton = document.querySelector("#muteButton button");
+            const audios = {
+                "I have no enemies": document.getElementById('audio1'),
+                "I really want to stay at your home": document.getElementById('audio2'),
+                "Dandadan Op": document.getElementById('audio3'),
+                "Im still standing": document.getElementById('audio4')
+            };
 
-            // Función para reproducir el audio
+            let currentAudio = audios["I have no enemies"]; // Audio por defecto
+            const muteButton = document.querySelector("#muteButton button");
+            const soundButtons = document.querySelectorAll(".boton-sonido");
+
+            // Reproducir audio por defecto al cargar
             const playAudio = () => {
-                audio.play().catch((error) => {
-                    console.warn("La reproducción automática fue bloqueada:", error);
+                currentAudio.play().catch((error) => {
+                    console.warn("Reproducción automática bloqueada:", error);
                 });
             };
 
-            // Reproducir al cargar la página
             playAudio();
 
-            // Si el navegador bloquea la reproducción, activa al hacer clic
-            document.body.addEventListener("click", () => {
-                playAudio();
-            }, { once: true });
+            // Si el navegador bloquea la reproducción, activar con un clic
+            document.body.addEventListener(
+                "click",
+                () => {
+                    playAudio();
+                },
+                { once: true }
+            );
 
-            // Manejador del botón de mute
+            // Manejador para el botón de mute
             muteButton.addEventListener("click", () => {
-                if (audio.muted) {
-                    audio.muted = false;
+                if (currentAudio.muted) {
+                    currentAudio.muted = false;
                     muteButton.textContent = "🔊";
                 } else {
-                    audio.muted = true;
+                    currentAudio.muted = true;
                     muteButton.textContent = "🔇";
                 }
             });
+
+            // Cambiar audio según el botón presionado
+            soundButtons.forEach((button) => {
+                button.addEventListener("click", () => {
+                    const selectedAudio = audios[button.textContent];
+                    if (selectedAudio && selectedAudio !== currentAudio) {
+                        // Detener el audio actual
+                        currentAudio.pause();
+                        currentAudio.currentTime = 0;
+
+                        // Reproducir el nuevo audio
+                        currentAudio = selectedAudio;
+                        currentAudio.play();
+                    }
+                });
+            });
         });
     </script>
+
     <!--Lógica Sonido Fin-->
 
     <!--Panel de control Inicio-->
@@ -166,7 +199,7 @@
             });
         };
         esconderAjustes();
-    
+
         // Función para volver a mostrar
         let mostrar = document.getElementById('mostrarAjustes');
         const mostrarAjustes = () => {
@@ -175,7 +208,7 @@
             });
         };
         mostrarAjustes();
-    
+
         // Función para pasar a ajustes de sonido
         let containerSonidoAjustes = document.getElementById('container-ajustes-sonido'); // Ajuste aquí
         let siguiente = document.getElementById('siguiente-ajustes');
@@ -187,7 +220,7 @@
         };
         siguienteSonido();
     </script>
-    
+
     <!--Panel de control Fin-->
 
     <!--Panel de control sonido Inicio-->
@@ -196,8 +229,8 @@
         let containerAjustes = document.getElementById('container-ajustes');
         let atras = document.getElementById('atras-ajustes');
 
-        const esconderAjustesSonido =()=>{
-                atras.addEventListener('click',()=>{
+        const esconderAjustesSonido = () => {
+            atras.addEventListener('click', () => {
                 containerSonido.style.display = 'none';
                 containerAjustes.style.display = 'block';
             })
