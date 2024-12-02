@@ -31,9 +31,9 @@
 
     <!--Botones Navegador Fin-->
 
-    <!--Panel de Ajustes Inicio-->
+    <!--Panel de Ajustes Background Inicio-->
     <div class="container-ajustes" id="container-ajustes">
-        <h1 style="text-align: center; margin-top: 50px;">Cambiar Fondo De Pantalla:</h1>
+        <h1 style="text-align: center; margin-top: 50px;">Cambiar Fondo De Pantalla: <span id="siguiente-ajustes">▶️</span></h1>
         <br><br><br>
         <div class="images-container">
             <img src="./img/background.png" class="background-img" id="img1">
@@ -41,9 +41,26 @@
             <img src="./img/background3.jpg" class="background-img" id="img3">
             <img src="./img/background4.webp" class="background-img" id="img4">
         </div>
-        <button class="cerrarAjustes" id="cerrarAjustes">Cerrar</button>
+        <button class="cerrarAjustes" id="cerrarAjustes" style="background-color: #00A6ED;">Cerrar</button>
     </div>
-    <!--Panel de Ajustes Fin-->
+    <!--Panel de Ajustes Background Fin-->
+
+    <!--Panel de Ajustes Sonido Inicio-->
+    <div class="container-ajustes-sonido" id="container-ajustes-sonido" style="display: none;">
+        <h1 style="text-align: center; margin-top: 50px;"><span id="atras-ajustes">◀️</span>Cambiar Sonido De Pantalla:</h1>
+        <br><br><br>
+        <div class="images-container-ajustes" style="text-align: center;">
+            <button class="boton-sonido">I have no enemies</button>
+            <br>
+            <button class="boton-sonido">I really want to stay at your home</button>
+            <br>
+            <button class="boton-sonido">Dandadan Op</button>
+            <br>
+            <button class="boton-sonido">Im still standing</button>
+        </div>
+    </div>
+    <!--Panel de Ajustes Sonido Fin-->
+
 
     <!--Contenedor Inicio-->
     <div class="container">
@@ -140,26 +157,56 @@
 
     <!--Panel de control Inicio-->
     <script>
-        // Funcion para esconder ajustes
+        // Función para esconder ajustes
         let container = document.getElementById('container-ajustes');
         const esconderAjustes = () => {
             let boton = document.querySelector('#cerrarAjustes');
             boton.addEventListener('click', () => {
                 container.style.display = 'none';
             });
-        }
+        };
         esconderAjustes();
-
-        // Funcion para volver a mostrar 
+    
+        // Función para volver a mostrar
         let mostrar = document.getElementById('mostrarAjustes');
-        const mostrarAjustes=()=>{
-            mostrar.addEventListener('click',()=>{
+        const mostrarAjustes = () => {
+            mostrar.addEventListener('click', () => {
                 container.style.display = 'block';
+            });
+        };
+        mostrarAjustes();
+    
+        // Función para pasar a ajustes de sonido
+        let containerSonidoAjustes = document.getElementById('container-ajustes-sonido'); // Ajuste aquí
+        let siguiente = document.getElementById('siguiente-ajustes');
+        const siguienteSonido = () => {
+            siguiente.addEventListener('click', () => {
+                container.style.display = 'none';
+                containerSonidoAjustes.style.display = 'block'; // Mostrar el contenedor correcto
+            });
+        };
+        siguienteSonido();
+    </script>
+    
+    <!--Panel de control Fin-->
+
+    <!--Panel de control sonido Inicio-->
+    <script>
+        let containerSonido = document.getElementById('container-ajustes-sonido');
+        let containerAjustes = document.getElementById('container-ajustes');
+        let atras = document.getElementById('atras-ajustes');
+
+        const esconderAjustesSonido =()=>{
+                atras.addEventListener('click',()=>{
+                containerSonido.style.display = 'none';
+                containerAjustes.style.display = 'block';
             })
         }
-        mostrarAjustes();
+
+        esconderAjustesSonido();
+
     </script>
-    <!--Panel de control Fin-->
+    <!--Panel de control sonido Fin-->
 
     <!--Control de Fondo De Pantalla Inicio-->
     <script>
@@ -170,7 +217,7 @@
 
         let fondo = document.getElementById('body-bg');
 
-        img1.addEventListener('click',()=>{
+        img1.addEventListener('click', () => {
             fondo.classList.remove('bg-photo1');
             fondo.classList.remove('bg-photo2');
             fondo.classList.remove('bg-photo3');
@@ -178,8 +225,8 @@
             fondo.classList.add('bg-photo1');
         })
 
-        
-        img2.addEventListener('click',()=>{
+
+        img2.addEventListener('click', () => {
             fondo.classList.remove('bg-photo1');
             fondo.classList.remove('bg-photo2');
             fondo.classList.remove('bg-photo3');
@@ -187,7 +234,7 @@
             fondo.classList.add('bg-photo2');
         })
 
-        img3.addEventListener('click',()=>{
+        img3.addEventListener('click', () => {
             fondo.classList.remove('bg-photo1');
             fondo.classList.remove('bg-photo2');
             fondo.classList.remove('bg-photo3');
@@ -195,7 +242,7 @@
             fondo.classList.add('bg-photo3');
         })
 
-        img4.addEventListener('click',()=>{
+        img4.addEventListener('click', () => {
             fondo.classList.remove('bg-photo1');
             fondo.classList.remove('bg-photo2');
             fondo.classList.remove('bg-photo3');
