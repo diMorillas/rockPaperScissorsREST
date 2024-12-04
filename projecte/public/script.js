@@ -10,16 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let partidaId = null;
     let turno = 1;
 
-    // Crear partida
-    crearPartidaBtn.addEventListener('click', () => {
-        const partidaIdInput = document.getElementById('partidaIdInput').value;
-        controlesPartida.style.display = "block";
-
-        if (!partidaIdInput) {
-            alert('Por favor, introduce un ID de partida válido.');
-            return;
-        }
-
+    function creaPartida(partidaIdInput){
         fetch('/api/partida', {
             method: 'POST',
             headers: {
@@ -40,18 +31,36 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(error);
             alert('No se pudo crear la partida.');
         });
+
+    }
+
+
+    // Crear partida
+    crearPartidaBtn.addEventListener('click', () => {
+        const partidaIdInput = document.getElementById('partidaIdInput').value;
+        controlesPartida.style.display = "block";
+
+        if (!partidaIdInput) {
+            alert('Por favor, introduce un ID de partida válido.');
+            return;
+        }
+        creaPartida(partidaIdInput);
     });
 
     // Actualizar visibilidad de los controles según el turno
-    function actualizarTurno(turno) {
+    function actualizarTurno() {
         if (turno === 1) {
             jugador1Div.style.display = 'block';
             jugador2Div.style.display = 'none';
-            console.log('Turno de jugador 1:')
+            console.log('Turno de jugador 1:');
+            controlesPartida.display = 'block';
+            turno = 2; 
         } else if (turno === 2) {
             jugador1Div.style.display = 'none';
             jugador2Div.style.display = 'block';
-            console.log('Turno de jugador 2:')
+            console.log('Turno de jugador 2:');
+            controlesPartida.display = 'block';
+            turno = 1;  
         }
     }
 
@@ -64,19 +73,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Realizar tiradas
-   
     document.querySelectorAll('.tiradaBtn').forEach(button => {
         button.addEventListener('click', () => {
             if (!partidaId) {
                 alert('Primero crea una partida.');
                 return;
             }
-    
+
             const jugador = button.dataset.jugador;
             const tirada = button.dataset.tirada;
-    
-            console.log(`Jugador ${jugador} ha tirado: ${tirada}`); // Muestra la tirada de cada jugador
-    
+
+            console.log(`Jugador ${jugador} ha tirado: ${tirada}`);
+
             fetch(`/api/partida/${partidaId}`, {
                 method: 'PUT',
                 headers: {
@@ -86,24 +94,23 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then(response => {
                 if (!response.ok) throw new Error('Error al realizar la tirada');
-                return response.text(); // Modificar según la respuesta del servidor
+                return response.text();
             })
             .then(data => {
                 resultadoP.textContent = data; // Mostrar mensaje del servidor
-                // Actualizar puntuación
                 return fetch(`/api/partida/${partidaId}`);
             })
             .then(response => response.json())
             .then(data => {
                 puntuacionSpan.textContent = `Jugador 1: ${data.jugadorUnoPuntuacion} - Jugador 2: ${data.jugadorDosPuntuacion}`;
 
-                // Verificar si la partida ha terminado (por ejemplo, si algún jugador ha ganado)
+                // Verificar si la partida ha terminado
                 if (data.jugadorUnoPuntuacion >= 3 || data.jugadorDosPuntuacion >= 3) {
                     finalizarPartida();
                 } else {
                     // Cambiar turno
-                    turno = turno % 2 + 1;
-                    actualizarTurno(turno);
+                    turno = turno === 1 ? 2 : 1;  // Actualizar turno globalmente
+                    actualizarTurno(); // Llamar a la función para actualizar los controles
                 }
             })
             .catch(error => {
@@ -112,5 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     });
-    
+
+    // Ejecutar setInterval para actualizar el turno cada 2 segundos
+    setInterval(() => {
+        actualizarTurno(); // Esto asegura que el turno se actualice y los controles se muestren
+    }, 2000);
 });
