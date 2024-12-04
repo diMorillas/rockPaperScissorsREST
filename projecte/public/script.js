@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let partidaId = null;
     let turno = 1;
+    let intervalID;
+    let finPartida = false;
 
     function creaPartida(partidaIdInput){
         fetch('/api/partida', {
@@ -47,14 +49,13 @@ document.addEventListener('DOMContentLoaded', () => {
             jugador2Div.style.display = 'none';
             resultadoP.textContent = '¡La partida ha terminado!';
             console.log('Partida finalizada.');
+            finPartida = true;
         })
         .catch(error => {
             console.log(error);
             alert("Error al eliminar la partida: " + error);
         });
     }
-    
-
 
 
     // Crear partida
@@ -137,6 +138,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Ejecutar setInterval para actualizar el turno cada 2 segundos
     setInterval(() => {
-        actualizarTurno();
-    }, 2000);
+        if(!finPartida){
+            actualizarTurno();
+        }else{
+            clearInterval(intervalID);
+        }
+    }, 4000);
 });
