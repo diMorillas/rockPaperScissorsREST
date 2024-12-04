@@ -34,6 +34,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
 
+    function finalizarPartida() {
+        fetch(`/api/partida/${partidaId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Error al finalizar la partida');
+            jugador1Div.style.display = 'none';
+            jugador2Div.style.display = 'none';
+            resultadoP.textContent = '¡La partida ha terminado!';
+            console.log('Partida finalizada.');
+        })
+        .catch(error => {
+            console.log(error);
+            alert("Error al eliminar la partida: " + error);
+        });
+    }
+    
+
+
 
     // Crear partida
     crearPartidaBtn.addEventListener('click', () => {
@@ -64,13 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Finalizar la partida
-    function finalizarPartida() {
-        jugador1Div.style.display = 'none';
-        jugador2Div.style.display = 'none';
-        resultadoP.textContent = '¡La partida ha terminado!';
-        console.log('Partida finalizada.');
-    }
 
     // Realizar tiradas
     document.querySelectorAll('.tiradaBtn').forEach(button => {
@@ -97,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return response.text();
             })
             .then(data => {
-                resultadoP.textContent = data; // Mostrar mensaje del servidor
+                resultadoP.textContent = data;
                 return fetch(`/api/partida/${partidaId}`);
             })
             .then(response => response.json())
@@ -109,8 +124,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     finalizarPartida();
                 } else {
                     // Cambiar turno
-                    turno = turno === 1 ? 2 : 1;  // Actualizar turno globalmente
-                    actualizarTurno(); // Llamar a la función para actualizar los controles
+                    turno = turno === 1 ? 2 : 1;
+                    actualizarTurno();
                 }
             })
             .catch(error => {
@@ -122,6 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Ejecutar setInterval para actualizar el turno cada 2 segundos
     setInterval(() => {
-        actualizarTurno(); // Esto asegura que el turno se actualice y los controles se muestren
+        actualizarTurno();
     }, 2000);
 });
