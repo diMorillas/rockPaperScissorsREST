@@ -14,12 +14,36 @@ body {
     height: 100vh;
 }
 
-.bg-photo {
+.bg-photo1 {
     background-image: url('./img/background.png');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    
+    cursor: pointer;
+}
+
+.bg-photo2 {
+    background-image: url('./img/background2.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+}
+
+.bg-photo3 {
+    background-image: url('./img/background3.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+}
+
+.bg-photo4 {
+    background-image: url('./img/background4.webp');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
 }
 
 /*Contenedor*/
@@ -29,6 +53,33 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     text-align: center;
+}
+
+.container-ajustes{
+    position: absolute;
+    width: 1000px;
+    height: 800px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    display: none;
+}
+
+.container-ajustes-sonido{
+    position: absolute;
+    width: 1000px;
+    height: 800px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    display: none;
+}
+
+.container-ajustes-sonido {  /*Esto centra*/
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center;
 }
 
 /*Botones*/
@@ -102,6 +153,36 @@ button:hover {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+.cerrarAjustes {
+    margin-top: 20px;
+    padding: 15px;
+    padding-left: 50px;
+    padding-right: 50px;
+    
+    margin-left: 420px;
+}
+
+.opacidad{
+    opacity: 0.45;
+    transition: ease 0.3;
+}
+
+.boton-sonido {
+    background-color: #007BFF;
+    padding: 35px;
+    padding-left: 30px;
+    padding-right: 30px;
+    color: white;
+}
+
+.images-container-ajustes {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    justify-content: center; 
+}
+
+
 /*Inputs*/
 
 input {
@@ -134,3 +215,25 @@ p {
 }
 
 
+/*Panel de Ajustes Imagenes*/
+
+.images-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px; /* Espacio entre las imágenes para que encaje */
+    margin-top: 20px;
+}
+
+.background-img {
+    max-width: 42%;
+    height: auto; 
+    object-fit: cover; 
+    border-radius: 5px;
+    filter: grayscale(100%);
+    transition: filter 0.3s ease; 
+}
+
+.background-img:hover {
+    filter: grayscale(0%); 
+}
