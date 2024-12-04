@@ -13,7 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let turno = 1;
     let jugadorInicia = null; // Variable para guardar quién comienza
 
-    // Crear partida
+    /**
+     * Event listener para crear la partida.
+     * 
+     * Guarda el jugador que inicia y muestra el div de los controles con el jugador
+     */
     crearPartidaBtn.addEventListener('click', () => {
         const partidaIdInput = document.getElementById('partidaIdInput').value;
         jugadorInicia = turnoSelect.value; // Guardamos quién inicia (j1 o j2)
@@ -22,12 +26,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!partidaIdInput) {
             alert('Por favor, introduce un ID de partida válido.');
             return;
+        }else{
+            createGame(partidaIdInput);
         }
 
-        createGame(partidaIdInput);
+
     });
 
-    // Unirse a una partida
+    /**
+     * Event listener al botón de unirse a la partida donde gestionamos quien es el jugador que se une. Se le muestran los controles empezando por el jugador 1,
+     */
     unirsePartidaBtn.addEventListener('click', () => {
         const partidaIdInput = document.getElementById('partidaIdInput').value;
         const jugador = turnoSelect.value;
@@ -36,9 +44,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!partidaIdInput) {
             alert('Por favor, introduce un ID de partida válido.');
             return;
+        }else{
+            joinGame(partidaIdInput, jugador);
         }
 
-        joinGame(partidaIdInput, jugador); // Llamar a la función de unirse
+
     });
 
     // Función para crear una partida
@@ -102,7 +112,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Función para actualizar el turno de la partida
+    /**
+     * No necesita parametros, se la llama dentro de otras funciones. Con esta función gestionamos los turnos y ocultamos el turno para hacer el cambio de jugador
+     */
     function updateTurno() {
         if (turno === 1) {
             jugador1Div.style.display = 'block';
@@ -198,4 +210,5 @@ document.addEventListener('DOMContentLoaded', () => {
             makeMove(jugador, tirada); // Realizar la tirada
         });
     });
+    setInterval(updateTurno,2000);
 });
