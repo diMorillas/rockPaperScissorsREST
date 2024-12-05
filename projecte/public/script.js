@@ -74,35 +74,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // Crear partida
     crearPartidaBtn.addEventListener('click', () => {
         let partidaIdInput = document.getElementById('partidaIdInput').value;
-        jugadorSeleccionado = jugadores.options.value;
+
+        let jugadorSeleccionado = jugadores.options[jugadores.selectedIndex].value;
         console.log(jugadorSeleccionado);
+
         controlesPartida.style.display = "block";
 
         if (!partidaIdInput) {
             alert('Por favor, introduce un ID de partida válido.');
             return;
         }
-        creaPartida(partidaIdInput,jugadorCreador);
+        creaPartida(partidaIdInput,jugadorSeleccionado);
     });
-
-    crearPartidaBtn.addEventListener('click', () => {
-    let partidaIdInput = document.getElementById('partidaIdInput').value;
-    let jugadorCreador = document.getElementById('jugadores').value;
-    controlesPartida.style.display = "block";
-
-    if (!partidaIdInput) {
-        alert('Por favor, introduce un ID de partida válido.');
-        return;
-    }
-    creaPartida(partidaIdInput, jugadorCreador);
-});
 
 
     //Unirse como jugador 2 a la partida. Como J2 no puedes crear solo unirte
 
     document.getElementById('unirsePartidaBtn').addEventListener('click', () => {
         const partidaIdInput = document.getElementById('partidaIdInput').value;
-        const jugadorSeleccionado = document.getElementById('players').value;
+        let jugadorSeleccionado = jugadores.options[jugadores.selectedIndex].value;
         console.log(jugadorSeleccionado);
     
         if (!partidaIdInput) {
@@ -110,19 +100,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
     
-        if (jugadorSeleccionado === 'J2') {
-            // El usuario seleccionó "Jugador 2"
-            const nombreJugadorDos = prompt('Ingresa tu nombre como Jugador 2:');
-            if (!nombreJugadorDos) {
-                alert('Nombre inválido. No se puede unir a la partida.');
-                return;
+        if (jugadorSeleccionado != 'J2') {
+            alert('Actualmente solo el Jugador 2 puede unirse a una partida existente.');
+
+            }else{
+                unirseComoJugadorDos(partidaIdInput, nombreJugadorDos);
+                
             }
     
-            // Llamar a la función para unirse a la partida
-            unirseComoJugadorDos(partidaIdInput, nombreJugadorDos);
-        } else {
-            alert('Actualmente solo el Jugador 2 puede unirse a una partida existente.');
-        }
     });
         
 
