@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
 
-
+/*
     function unirseComoJugadorDos(partidaId, jugadorDosNombre) {
         fetch(`/api/partida/${partidaId}/unirse`, {
             method: 'PUT',
@@ -52,16 +52,18 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(response => {
             if (!response.ok) {
-                return response.json().then(data => {
-                    throw new Error(data.error || 'Error al unirse a la partida');
+                return response.text().then(text => {
+                    throw new Error(text || 'Error al unirse a la partida');
                 });
             }
             return response.json();
         })
         .then(data => {
-            partidaId = data.id;
+            partidaId = data.id; // Se asegura de que partidaId es actualizado aquí
             console.log('Jugador 2 unido con éxito:', data);
             partidaIdSpan.textContent = partidaId;
+    
+            // Aquí debería ser suficiente para mantener partidaId actualizado
     
             // Actualizar el turno
             fetch(`/api/partida/${partidaId}`)
@@ -104,8 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
             alert(`No se pudo unir a la partida: ${error.message}`);
         });
     }
-            
-                
+                    
+    */            
     // Crear partida
     crearPartidaBtn.addEventListener('click', () => {
         let partidaIdInput = document.getElementById('partidaIdInput').value;
@@ -130,20 +132,82 @@ document.addEventListener('DOMContentLoaded', () => {
         let jugadorSeleccionado = jugadores.options[jugadores.selectedIndex].value;
         console.log(jugadorSeleccionado);
     
+        // Verifica que se haya ingresado un ID de partida válido
         if (!partidaIdInput) {
             alert('Por favor, ingresa un ID de partida válido.');
             return;
         }
     
+        // Verifica si el jugador seleccionado es el Jugador 2
         if (jugadorSeleccionado != 'J2') {
             alert('Actualmente solo el Jugador 2 puede unirse a una partida existente.');
-
-            }else{
-                unirseComoJugadorDos(partidaIdInput, jugadorSeleccionado);
-                
-            }
+            return;
+        }
     
+        // Llama a la función para unirse como Jugador 2
+        unirseComoJugadorDos(partidaIdInput, jugadorSeleccionado);
     });
+    
+    function unirseComoJugadorDos(partidaIdInput, jugadorDosNombre) {
+        fetch(`/api/partida/${partidaIdInput}/unirse`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ jugadorDos: jugadorDosNombre }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Error al unirse a la partida');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Si todo va bien, actualizar la partidaId en el cliente
+            partidaId = data.id;  // Asegúrate de que partidaId se actualice aquí
+            console.log('Jugador 2 unido con éxito:', data);
+            partidaIdSpan.textContent = partidaId;  // Mostrar el ID de la partida en la UI
+    
+            // Actualizar el turno
+            fetch(`/api/partida/${partidaId}`)
+                .then(response => response.json())
+                .then(data => {
+                    turno = data.turno;
+                    actualizarTurno();
+                })
+                .catch(error => {
+                    console.error('Error al obtener el turno:', error);
+                });
+    
+            // Mostrar los controles de la partida
+            document.getElementById('controlesPartida').style.display = 'block';
+    
+            // Iniciar el intervalo de sincronización solo después de que la partida se haya unido correctamente
+            clearInterval(intervalID);
+            intervalID = setInterval(() => {
+                if (!finPartida) {
+                    fetch(`/api/partida/${partidaId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            turno = data.turno;
+                            actualizarTurno();
+                        })
+                        .catch(error => {
+                            console.error('Error al obtener el turno:', error);
+                        });
+                } else {
+                    clearInterval(intervalID);
+                }
+            }, 4000);
+        })
+        .catch(error => {
+            console.error(error);
+            alert(`No se pudo unir a la partida: ${error.message}`);
+        });
+    }
+    
         
 
     function finalizarPartida() {
@@ -238,21 +302,19 @@ document.querySelectorAll('.tiradaBtn').forEach(button => {
     
     //Consultar el turno al back para empezar a la vez
     setInterval(() => {
-        if (!finPartida) {
-            console.log(partidaId);
-            fetch(`/api/partida/${partidaId}`)
-                .then(response => response.json())
-                .then(data => {
-                    turno = data.turno;
-                    console.log(data);
-                    actualizarTurno();
-                })
-                .catch(error => {
-                    console.error('Error al obtener el turno:', error);
-                });
-        } else {
-            clearInterval(intervalID);
-        }
-    }, 4000);
+        if (!partidaId) return;
+    
+        fetch(`/api/partida/${partidaId}`)
+            .then(response => response.json())
+            .then(data => {
+                puntuacionSpan.textContent = `Jugador 1: ${data.jugadorUnoPuntuacion} - Jugador 2: ${data.jugadorDosPuntuacion}`;
+                turno = data.turno;
+                actualizarTurno();
+            })
+            .catch(error => {
+                console.error('Error al sincronizar la partida:', error);
+            });
+    }, 3000); // Actualiza cada 3 segundos
+    
 
 });
