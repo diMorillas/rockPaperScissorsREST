@@ -42,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
 
+
     function unirseComoJugadorDos(partidaId, jugadorDosNombre) {
         fetch(`/api/partida/${partidaId}/unirse`, {
             method: 'PUT',
@@ -61,9 +62,24 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
             console.log('Jugador 2 unido con éxito:', data);
             alert(`Te has unido a la partida con ID: ${data.id}`);
+            
+            // Aquí el turno ya debería estar gestionado por el servidor
+            // y actualizado cuando sea necesario.
+            fetch(`/api/partida/${data.id}/turno`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ turno: 1 }),  // Esto es gestionado por el servidor
+            })
+            .then(response => response.json())
+            .then(turnoData => {
+                // No es necesario asignar turno en el cliente, ya que se gestiona del lado del servidor.
+                console.log('Turno actualizado:', turnoData.turno);
+            });
+
             // Mostrar controles
             document.getElementById('controlesPartida').style.display = 'block';
-            turno = 1;
         })
         .catch(error => {
             console.error(error);
@@ -199,12 +215,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Ejecutar setInterval para actualizar el turno cada 2 segundos
+    //Consultar el turno al back para empezar a la vez
     setInterval(() => {
-        if(!finPartida){
-            actualizarTurno();
-        }else{
+        if (!finPartida) {
+            fetch(`/api/partida/${partidaId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Actualizar turno con la información del servidor
+                    turno = data.turno;
+                    actualizarTurno();
+                })
+                .catch(error => {
+                    console.error('Error al obtener el turno:', error);
+                });
+        } else {
             clearInterval(intervalID);
         }
     }, 4000);
+
 });
