@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Actualmente solo el Jugador 2 puede unirse a una partida existente.');
 
             }else{
-                unirseComoJugadorDos(partidaIdInput, nombreJugadorDos);
+                unirseComoJugadorDos(partidaIdInput, jugadorSeleccionado);
                 
             }
     
