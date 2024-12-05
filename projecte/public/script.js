@@ -142,7 +142,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-        
+    eliminarPartidaBtcn.addEventListener('click',()=>{
+        finalizarPartida();
+    })
 
     function finalizarPartida() {
         fetch(`/api/partida/${partidaId}`, {
