@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     let crearPartidaBtn = document.getElementById('crearPartidaBtn');
+    let eliminarPartidaBtcn = document.getElementById('eliminarPartidaBtn');
     let partidaIdSpan = document.getElementById('partidaId');
     let puntuacionSpan = document.getElementById('puntuacion');
     let resultadoP = document.getElementById('resultado');
@@ -41,73 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
 
-/*
-    function unirseComoJugadorDos(partidaId, jugadorDosNombre) {
-        fetch(`/api/partida/${partidaId}/unirse`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ jugadorDos: jugadorDosNombre }),
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.text().then(text => {
-                    throw new Error(text || 'Error al unirse a la partida');
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            partidaId = data.id; // Se asegura de que partidaId es actualizado aquí
-            console.log('Jugador 2 unido con éxito:', data);
-            partidaIdSpan.textContent = partidaId;
-    
-            // Aquí debería ser suficiente para mantener partidaId actualizado
-    
-            // Actualizar el turno
-            fetch(`/api/partida/${partidaId}`)
-                .then(response => response.json())
-                .then(data => {
-                    turno = data.turno;
-                    actualizarTurno();
-                })
-                .catch(error => {
-                    console.error('Error al obtener el turno:', error);
-                });
-    
-            // Mostrar controles de la partida
-            document.getElementById('controlesPartida').style.display = 'block';
-    
-            // Iniciar el intervalo solo después de que la partida se haya unido correctamente
-            if (partidaId) {
-                clearInterval(intervalID); // Limpiar cualquier intervalo previo
-                intervalID = setInterval(() => {
-                    if (!finPartida) {
-                        console.log(partidaId);
-                        fetch(`/api/partida/${partidaId}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                // Actualizar turno con la información del servidor
-                                turno = data.turno;
-                                actualizarTurno();
-                            })
-                            .catch(error => {
-                                console.error('Error al obtener el turno:', error);
-                            });
-                    } else {
-                        clearInterval(intervalID);
-                    }
-                }, 4000);
-            }
-        })
-        .catch(error => {
-            console.error(error);
-            alert(`No se pudo unir a la partida: ${error.message}`);
-        });
-    }
-                    
-    */            
     // Crear partida
     crearPartidaBtn.addEventListener('click', () => {
         let partidaIdInput = document.getElementById('partidaIdInput').value;
@@ -200,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     clearInterval(intervalID);
                 }
-            }, 4000);
+            }, 2000);
         })
         .catch(error => {
             console.error(error);
@@ -219,11 +153,8 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(response => {
             if (!response.ok) throw new Error('Error al finalizar la partida');
-            jugador1Div.style.display = 'none';
-            jugador2Div.style.display = 'none';
-            resultadoP.textContent = '¡La partida ha terminado!';
-            console.log('Partida finalizada.');
-            finPartida = true;
+            console.log("partida eliminada");
+
         })
         .catch(error => {
             console.log(error);
@@ -287,7 +218,11 @@ document.querySelectorAll('.tiradaBtn').forEach(button => {
                 // Verificar si la partida ha terminado
                 if (partida.jugadorUnoPuntuacion >= 3 || partida.jugadorDosPuntuacion >= 3) {
                     alert('La partida ha terminado');
-                    finalizarPartida(); // Maneja el fin de la partida
+                    jugador1Div.style.display = 'none';
+                    jugador2Div.style.display = 'none';
+                    resultadoP.textContent = '¡La partida ha terminado!';
+                    console.log('Partida finalizada.');
+                    finPartida = true;
                 }
             })
             .catch(error => {
@@ -314,7 +249,7 @@ document.querySelectorAll('.tiradaBtn').forEach(button => {
             .catch(error => {
                 console.error('Error al sincronizar la partida:', error);
             });
-    }, 3000); // Actualiza cada 3 segundos
+    }, 2000); // Actualiza cada 3 segundos
     
 
 });
