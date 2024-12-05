@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     let crearPartidaBtn = document.getElementById('crearPartidaBtn');
-    let unirsePartidaBtn = document.getElementById('unirsePartidaBtn');
     let partidaIdSpan = document.getElementById('partidaId');
     let puntuacionSpan = document.getElementById('puntuacion');
     let resultadoP = document.getElementById('resultado');
@@ -60,34 +59,53 @@ document.addEventListener('DOMContentLoaded', () => {
             return response.json();
         })
         .then(data => {
+            partidaId = data.id;
             console.log('Jugador 2 unido con éxito:', data);
-            alert(`Te has unido a la partida con ID: ${data.id}`);
-            
-            // Aquí el turno ya debería estar gestionado por el servidor
-            // y actualizado cuando sea necesario.
-            fetch(`/api/partida/${data.id}/turno`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ turno: 1 }),  // Esto es gestionado por el servidor
-            })
-            .then(response => response.json())
-            .then(turnoData => {
-                // No es necesario asignar turno en el cliente, ya que se gestiona del lado del servidor.
-                console.log('Turno actualizado:', turnoData.turno);
-            });
-
-            // Mostrar controles
+            partidaIdSpan.textContent = partidaId;
+    
+            // Actualizar el turno
+            fetch(`/api/partida/${partidaId}`)
+                .then(response => response.json())
+                .then(data => {
+                    turno = data.turno;
+                    actualizarTurno();
+                })
+                .catch(error => {
+                    console.error('Error al obtener el turno:', error);
+                });
+    
+            // Mostrar controles de la partida
             document.getElementById('controlesPartida').style.display = 'block';
+    
+            // Iniciar el intervalo solo después de que la partida se haya unido correctamente
+            if (partidaId) {
+                clearInterval(intervalID); // Limpiar cualquier intervalo previo
+                intervalID = setInterval(() => {
+                    if (!finPartida) {
+                        console.log(partidaId);
+                        fetch(`/api/partida/${partidaId}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                // Actualizar turno con la información del servidor
+                                turno = data.turno;
+                                actualizarTurno();
+                            })
+                            .catch(error => {
+                                console.error('Error al obtener el turno:', error);
+                            });
+                    } else {
+                        clearInterval(intervalID);
+                    }
+                }, 4000);
+            }
         })
         .catch(error => {
             console.error(error);
             alert(`No se pudo unir a la partida: ${error.message}`);
         });
     }
-
-
+            
+                
     // Crear partida
     crearPartidaBtn.addEventListener('click', () => {
         let partidaIdInput = document.getElementById('partidaIdInput').value;
@@ -108,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     //Unirse como jugador 2 a la partida. Como J2 no puedes crear solo unirte
 
     document.getElementById('unirsePartidaBtn').addEventListener('click', () => {
-        const partidaIdInput = document.getElementById('partidaIdInput').value;
+        let partidaIdInput = document.getElementById('partidaIdInput').value;
         let jugadorSeleccionado = jugadores.options[jugadores.selectedIndex].value;
         console.log(jugadorSeleccionado);
     
@@ -174,12 +192,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Primero crea una partida.');
                 return;
             }
-
+    
             const jugador = button.dataset.jugador;
             const tirada = button.dataset.tirada;
-
+    
             console.log(`Jugador ${jugador} ha tirado: ${tirada}`);
-
+    
             fetch(`/api/partida/${partidaId}`, {
                 method: 'PUT',
                 headers: {
@@ -193,19 +211,37 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then(data => {
                 resultadoP.textContent = data;
-                return fetch(`/api/partida/${partidaId}`);
+                return fetch(`/api/partida/${partidaId}`); // Obtener el estado actualizado de la partida
             })
             .then(response => response.json())
             .then(data => {
                 puntuacionSpan.textContent = `Jugador 1: ${data.jugadorUnoPuntuacion} - Jugador 2: ${data.jugadorDosPuntuacion}`;
-
+    
                 // Verificar si la partida ha terminado
                 if (data.jugadorUnoPuntuacion >= 3 || data.jugadorDosPuntuacion >= 3) {
                     finalizarPartida();
                 } else {
-                    // Cambiar turno
-                    turno = turno === 1 ? 2 : 1;
-                    actualizarTurno();
+                    // Actualizar el turno en el servidor
+                    fetch(`/api/partida/${partidaId}/turno`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ turno: data.turno === 1 ? 2 : 1 }), // Cambiar el turno
+                    })
+                    .then(() => {
+                        // Después de actualizar el turno, obtener el turno actualizado
+                        return fetch(`/api/partida/${partidaId}`);
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Actualizar el turno en el cliente
+                        turno = data.turno;
+                        actualizarTurno();
+                    })
+                    .catch(error => {
+                        console.error('Error al actualizar el turno:', error);
+                    });
                 }
             })
             .catch(error => {
@@ -214,10 +250,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     });
-
+    
+/*
     //Consultar el turno al back para empezar a la vez
     setInterval(() => {
         if (!finPartida) {
+            console.log(partidaId);
             fetch(`/api/partida/${partidaId}`)
                 .then(response => response.json())
                 .then(data => {
@@ -232,5 +270,6 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(intervalID);
         }
     }, 4000);
+    */
 
 });
