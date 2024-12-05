@@ -74,24 +74,36 @@ app.delete('/api/partida/:id', (req, res) => {
  */
 app.put('/api/partida/:id', (req, res) => {
     const partida = partidas.find(p => p.id === req.params.id);
-    if (!partida) return res.status(404).send('Partida no trobada');
+    if (!partida) {
+        return res.status(404).json({ mensaje: 'Partida no encontrada' });
+    }
 
     if (partida.jugadorUnoPuntuacion >= 3 || partida.jugadorDosPuntuacion >= 3) {
-        return res.send("La partida ha acabado");
+        return res.status(400).json({ mensaje: 'La partida ya ha acabado' });
     }
 
-    const { jugador, tirada } = req.body; // 'jugador' indica quién está jugando (1 o 2)
+    const { jugador, tirada } = req.body;
+
+    // Validar que sea el turno del jugador correcto
+    if (jugador !== partida.turno) {
+        return res.status(400).json({ mensaje: 'No es el turno de este jugador' });
+    }
+
+    // Registrar la tirada según el jugador
     if (jugador === 1) {
         partida.tiradaJugadorUno = tirada;
+        partida.turno = 2; // Cambiar turno al jugador 2
     } else if (jugador === 2) {
         partida.tiradaJugadorDos = tirada;
+        partida.turno = 1; // Cambiar turno al jugador 1
     } else {
-        return res.status(400).send('Jugador no válido');
+        return res.status(400).json({ mensaje: 'Jugador no válido' });
     }
 
+    // Resolver el turno solo si ambos jugadores han realizado su tirada
     if (partida.tiradaJugadorUno && partida.tiradaJugadorDos) {
-        // Resolver el turno
         const { tiradaJugadorUno: movJ1, tiradaJugadorDos: movJ2 } = partida;
+
         if (movJ1 === movJ2) {
             console.log("Empate");
         } else if (
@@ -106,14 +118,17 @@ app.put('/api/partida/:id', (req, res) => {
             console.log("¡Jugador 2 gana este turno!");
         }
 
-        // Limpiar tiradas y avanzar turno
+        // Reiniciar las tiradas
         partida.tiradaJugadorUno = null;
         partida.tiradaJugadorDos = null;
-        partida.turnoPartida++;
     }
 
-    res.send(`La partida ha sido modificada: puntuación es J1:${partida.jugadorUnoPuntuacion} J2:${partida.jugadorDosPuntuacion}`);
+    res.json({
+        mensaje: 'Tirada registrada correctamente',
+        partida,
+    });
 });
+
 
 
 //Ruta para que el J2 se pueda unir

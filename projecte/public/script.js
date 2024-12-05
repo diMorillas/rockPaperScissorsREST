@@ -185,73 +185,57 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // Realizar tiradas
-    document.querySelectorAll('.tiradaBtn').forEach(button => {
-        button.addEventListener('click', () => {
-            if (!partidaId) {
-                alert('Primero crea una partida.');
-                return;
-            }
-    
-            const jugador = button.dataset.jugador;
-            const tirada = button.dataset.tirada;
-    
-            console.log(`Jugador ${jugador} ha tirado: ${tirada}`);
-    
-            fetch(`/api/partida/${partidaId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ jugador: parseInt(jugador), tirada }), 
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Error al realizar la tirada');
-                return response.text();
+// Realizar tiradas
+document.querySelectorAll('.tiradaBtn').forEach(button => {
+    button.addEventListener('click', () => {
+        if (!partidaId) {
+            alert('Primero crea una partida.');
+            return;
+        }
+
+        const jugador = parseInt(button.dataset.jugador, 10);
+        const tirada = button.dataset.tirada;
+
+        console.log(`Jugador ${jugador} ha tirado: ${tirada}`);
+
+        fetch(`/api/partida/${partidaId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ jugador, tirada }),
+        })
+            .then(async response => {
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.mensaje || 'Error al realizar la tirada');
+                }
+                return response.json();
             })
             .then(data => {
-                resultadoP.textContent = data;
-                return fetch(`/api/partida/${partidaId}`); // Obtener el estado actualizado de la partida
-            })
-            .then(response => response.json())
-            .then(data => {
-                puntuacionSpan.textContent = `Jugador 1: ${data.jugadorUnoPuntuacion} - Jugador 2: ${data.jugadorDosPuntuacion}`;
-    
+                const { partida } = data;
+
+                // Actualizar puntuación y turno en la interfaz
+                puntuacionSpan.textContent = `Jugador 1: ${partida.jugadorUnoPuntuacion} - Jugador 2: ${partida.jugadorDosPuntuacion}`;
+                turno = partida.turno;
+                actualizarTurno(); // Actualiza visualmente el turno
+
                 // Verificar si la partida ha terminado
-                if (data.jugadorUnoPuntuacion >= 3 || data.jugadorDosPuntuacion >= 3) {
-                    finalizarPartida();
-                } else {
-                    // Actualizar el turno en el servidor
-                    fetch(`/api/partida/${partidaId}/turno`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ turno: data.turno === 1 ? 2 : 1 }), // Cambiar el turno
-                    })
-                    .then(() => {
-                        // Después de actualizar el turno, obtener el turno actualizado
-                        return fetch(`/api/partida/${partidaId}`);
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        // Actualizar el turno en el cliente
-                        turno = data.turno;
-                        actualizarTurno();
-                    })
-                    .catch(error => {
-                        console.error('Error al actualizar el turno:', error);
-                    });
+                if (partida.jugadorUnoPuntuacion >= 3 || partida.jugadorDosPuntuacion >= 3) {
+                    alert('La partida ha terminado');
+                    finalizarPartida(); // Maneja el fin de la partida
                 }
             })
             .catch(error => {
-                console.error(error);
-                alert('Error al realizar la tirada.');
+                console.error('Error al realizar la tirada:', error);
+                alert(error.message);
             });
-        });
     });
+});
+
+
+
     
-/*
     //Consultar el turno al back para empezar a la vez
     setInterval(() => {
         if (!finPartida) {
@@ -259,8 +243,8 @@ document.addEventListener('DOMContentLoaded', () => {
             fetch(`/api/partida/${partidaId}`)
                 .then(response => response.json())
                 .then(data => {
-                    // Actualizar turno con la información del servidor
                     turno = data.turno;
+                    console.log(data);
                     actualizarTurno();
                 })
                 .catch(error => {
@@ -270,6 +254,5 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(intervalID);
         }
     }, 4000);
-    */
 
 });
