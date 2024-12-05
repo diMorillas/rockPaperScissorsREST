@@ -1,24 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const crearPartidaBtn = document.getElementById('crearPartidaBtn');
-    const partidaIdSpan = document.getElementById('partidaId');
-    const puntuacionSpan = document.getElementById('puntuacion');
-    const resultadoP = document.getElementById('resultado');
-    const controlesPartida = document.getElementById('controlesPartida');
-    const jugador1Div = document.getElementById('jugador1');
-    const jugador2Div = document.getElementById('jugador2');
+    let crearPartidaBtn = document.getElementById('crearPartidaBtn');
+    let unirsePartidaBtn = document.getElementById('unirsePartidaBtn');
+    let partidaIdSpan = document.getElementById('partidaId');
+    let puntuacionSpan = document.getElementById('puntuacion');
+    let resultadoP = document.getElementById('resultado');
+    let controlesPartida = document.getElementById('controlesPartida');
+    let jugador1Div = document.getElementById('jugador1');
+    let jugador2Div = document.getElementById('jugador2');
+    let jugadores = document.getElementById('jugadores');
+  
+
 
     let partidaId = null;
     let turno = 1;
     let intervalID;
     let finPartida = false;
+    let jugadorSeleccionado = "";
+    
 
-    function creaPartida(partidaIdInput){
+    function creaPartida(partidaIdInput,jugador){
         fetch('/api/partida', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ id: partidaIdInput }),
+            body: JSON.stringify({ id: partidaIdInput,jugadorUno:jugador}),
         })
         .then(response => {
             if (!response.ok) throw new Error('Error al crear la partida');
@@ -35,6 +41,90 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     }
+
+    function unirseComoJugadorDos(partidaId, jugadorDosNombre) {
+        fetch(`/api/partida/${partidaId}/unirse`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ jugadorDos: jugadorDosNombre }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Error al unirse a la partida');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Jugador 2 unido con éxito:', data);
+            alert(`Te has unido a la partida con ID: ${data.id}`);
+            // Mostrar controles para Jugador 2 o actualizar la vista
+            document.getElementById('controlesPartida').style.display = 'block';
+        })
+        .catch(error => {
+            console.error(error);
+            alert(`No se pudo unir a la partida: ${error.message}`);
+        });
+    }
+
+
+    // Crear partida
+    crearPartidaBtn.addEventListener('click', () => {
+        let partidaIdInput = document.getElementById('partidaIdInput').value;
+        jugadorSeleccionado = jugadores.options.value;
+        console.log(jugadorSeleccionado);
+        controlesPartida.style.display = "block";
+
+        if (!partidaIdInput) {
+            alert('Por favor, introduce un ID de partida válido.');
+            return;
+        }
+        creaPartida(partidaIdInput,jugadorCreador);
+    });
+
+    crearPartidaBtn.addEventListener('click', () => {
+    let partidaIdInput = document.getElementById('partidaIdInput').value;
+    let jugadorCreador = document.getElementById('jugadores').value;
+    controlesPartida.style.display = "block";
+
+    if (!partidaIdInput) {
+        alert('Por favor, introduce un ID de partida válido.');
+        return;
+    }
+    creaPartida(partidaIdInput, jugadorCreador);
+});
+
+
+    //Unirse como jugador 2 a la partida. Como J2 no puedes crear solo unirte
+
+    document.getElementById('unirsePartidaBtn').addEventListener('click', () => {
+        const partidaIdInput = document.getElementById('partidaIdInput').value;
+        const jugadorSeleccionado = document.getElementById('players').value;
+        console.log(jugadorSeleccionado);
+    
+        if (!partidaIdInput) {
+            alert('Por favor, ingresa un ID de partida válido.');
+            return;
+        }
+    
+        if (jugadorSeleccionado === 'J2') {
+            // El usuario seleccionó "Jugador 2"
+            const nombreJugadorDos = prompt('Ingresa tu nombre como Jugador 2:');
+            if (!nombreJugadorDos) {
+                alert('Nombre inválido. No se puede unir a la partida.');
+                return;
+            }
+    
+            // Llamar a la función para unirse a la partida
+            unirseComoJugadorDos(partidaIdInput, nombreJugadorDos);
+        } else {
+            alert('Actualmente solo el Jugador 2 puede unirse a una partida existente.');
+        }
+    });
+        
 
     function finalizarPartida() {
         fetch(`/api/partida/${partidaId}`, {
@@ -56,19 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Error al eliminar la partida: " + error);
         });
     }
-
-
-    // Crear partida
-    crearPartidaBtn.addEventListener('click', () => {
-        const partidaIdInput = document.getElementById('partidaIdInput').value;
-        controlesPartida.style.display = "block";
-
-        if (!partidaIdInput) {
-            alert('Por favor, introduce un ID de partida válido.');
-            return;
-        }
-        creaPartida(partidaIdInput);
-    });
 
     // Actualizar visibilidad de los controles según el turno
     function actualizarTurno() {

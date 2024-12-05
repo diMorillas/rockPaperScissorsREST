@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
 });
 
 
-// Ver el estado de todas las partidas
+// Ver el todas las partidas
 app.get('/api/partida/', (req, res) => res.send(partidas));
 
 // Obtener una partida en específico
@@ -44,12 +44,14 @@ app.get('/api/partida/:id', (req, res) => {
  */
 app.post('/api/partida', (req, res) => {
     let partida = {
-        id: req.body.id,  // Generar ID aleatorio si no se pasa
+        id: req.body.id,
         jugadorUnoPuntuacion: 0,
         jugadorDosPuntuacion: 0,
         tiradaJugadorUno:'',
         tiradaJugadorDos:'',
-        turnoPartida:1
+        turnoPartida:1,
+        jugadorUno:req.body.jugadorUno,
+        jugadorDos:''
     };
     
     partidas.push(partida);  // Agrega la nueva partida al array "partidas"
@@ -66,7 +68,7 @@ app.delete('/api/partida/:id', (req, res) => {
     res.send('Partida esborrada');
 });
 
-// Modificar una partida existente
+// Modificar una tirada y estado de la partida
 /**
  * Toma como @param id el id de la partida. Es un re.param por lo que hay que pasarlo en la ruta de la aplicación
  */
@@ -112,6 +114,30 @@ app.put('/api/partida/:id', (req, res) => {
 
     res.send(`La partida ha sido modificada: puntuación es J1:${partida.jugadorUnoPuntuacion} J2:${partida.jugadorDosPuntuacion}`);
 });
+
+
+//Ruta para que el J2 se pueda unir
+
+app.put('/api/partida/:id/unirse', (req, res) => {
+    const partidaId = req.params.id;
+    const jugadorDos = req.body.jugadorDos;
+
+    const partida = partidas.find(p => p.id === partidaId);
+
+    if (!partida) {
+        return res.status(404).json({ error: 'Partida no encontrada' });
+    }
+
+    if (partida.jugadorDos) {
+        return res.status(400).json({ error: 'La partida ya tiene un Jugador 2' });
+    }
+
+    // Asignar Jugador 2
+    partida.jugadorDos = jugadorDos;
+
+    res.json(partida); // Devolver el estado actualizado de la partida
+});
+
 
 
 // Inicio del servidor
