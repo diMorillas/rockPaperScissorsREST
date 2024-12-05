@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     let partidaId = null;
-    let turno = 1;
+    let turno = 0; //0 Para evitar que el setInterval empiece dispar
     let intervalID;
     let finPartida = false;
     let jugadorSeleccionado = "";
@@ -61,8 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
             console.log('Jugador 2 unido con éxito:', data);
             alert(`Te has unido a la partida con ID: ${data.id}`);
-            // Mostrar controles para Jugador 2 o actualizar la vista
+            // Mostrar controles
             document.getElementById('controlesPartida').style.display = 'block';
+            turno = 1;
         })
         .catch(error => {
             console.error(error);

@@ -49,7 +49,7 @@ app.post('/api/partida', (req, res) => {
         jugadorDosPuntuacion: 0,
         tiradaJugadorUno:'',
         tiradaJugadorDos:'',
-        turnoPartida:1,
+        turnoPartida:0,
         jugadorUno:req.body.jugadorUno,
         jugadorDos:''
     };
@@ -134,6 +134,7 @@ app.put('/api/partida/:id/unirse', (req, res) => {
 
     // Asignar Jugador 2
     partida.jugadorDos = jugadorDos;
+    partida.turno = 1;
 
     res.json(partida); // Devolver el estado actualizado de la partida
 });
