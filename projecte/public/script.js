@@ -1,9 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     let crearPartidaBtn = document.getElementById('crearPartidaBtn');
-    let eliminarPartidaBtcn = document.getElementById('eliminarPartidaBtn');
+    let eliminarPartidaBtn = document.getElementById('eliminarPartidaBtn');
     let partidaIdSpan = document.getElementById('partidaId');
     let puntuacionSpan = document.getElementById('puntuacion');
     let resultadoP = document.getElementById('resultado');
+    let partidaIdInput = document.getElementById("partidaIdInput");
     let controlesPartida = document.getElementById('controlesPartida');
     let jugador1Div = document.getElementById('jugador1');
     let jugador2Div = document.getElementById('jugador2');
@@ -142,9 +143,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    eliminarPartidaBtcn.addEventListener('click',()=>{
+    eliminarPartidaBtn.addEventListener('click',()=>{
         finalizarPartida();
-    })
+        partidaIdInput.value = "";
+
+    });
 
     function finalizarPartida() {
         fetch(`/api/partida/${partidaId}`, {
@@ -153,15 +156,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 'Content-Type': 'application/json',
             },
         })
-        .then(response => {
-            if (!response.ok) throw new Error('Error al finalizar la partida');
-            console.log("partida eliminada");
-
-        })
-        .catch(error => {
-            console.log(error);
-            alert("Error al eliminar la partida: " + error);
-        });
+            .then(response => {
+                if (!response.ok) throw new Error('Error al finalizar la partida');
+                return response.text(); // ahora si debe mostrarme el texto
+            })
+            .then(data => {
+                console.log('Respuesta del servidor:', data);
+                alert(data); //me m uestra el mensaje de rest
+            })
+            .catch(error => {
+                console.log(error);
+                alert("Error al eliminar la partida: " + error.message);
+            });
+        
     }
 
     // Actualizar visibilidad de los controles según el turno

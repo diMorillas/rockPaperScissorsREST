@@ -61,12 +61,17 @@ app.post('/api/partida', (req, res) => {
 // Eliminar una partida por ID
 app.delete('/api/partida/:id', (req, res) => {
     let partida = partidas.find(p => p.id === req.params.id);
-    if (!partida) return res.status(404).send('Partida no trobada');
-    
+    if (!partida) {
+        console.log('Partida no encontrada');
+        return res.status(404).send('Partida no trobada');
+    }
+
     let index = partidas.indexOf(partida);
     partidas.splice(index, 1);
+    console.log('Partida eliminada:', partida);
     res.send('Partida esborrada');
 });
+
 
 // Modificar una tirada y estado de la partida
 /**
