@@ -60,6 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
         let partidaIdInput = document.getElementById('partidaIdInput').value;
 
         let jugadorSeleccionado = jugadores.options[jugadores.selectedIndex].value;
+        if(jugadorSeleccionado == "J2"){
+            alert("El jugador 2 no puede crear partidas");
+            return
+
+        }
         console.log(jugadorSeleccionado);
 
         controlesPartida.style.display = "block";
@@ -169,7 +174,8 @@ document.addEventListener('DOMContentLoaded', () => {
             },
         })
             .then(response => {
-                if (!response.ok) throw new Error('Error al finalizar la partida');
+
+                if (!response.ok) throw new Error('No se ha encontrado la partida');
                 return response.text(); // ahora si debe mostrarme el texto
             })
             .then(data => {
