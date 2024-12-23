@@ -43,26 +43,33 @@ app.get('/api/partida/:id', (req, res) => {
  * Se añade desde el cuerpo del mensaje. El resto de valores se inician en 0.
  */
 app.post('/api/partida', (req, res) => {
+    let partidaDuplicada = partidas.find(p => p.id === req.body.id);
+
+    if (partidaDuplicada) {
+        return res.status(400).send("La partida ja existeix"); // Usa `return` para evitar que continúe la ejecución
+    }
+
     let partida = {
         id: req.body.id,
         jugadorUnoPuntuacion: 0,
         jugadorDosPuntuacion: 0,
-        tiradaJugadorUno:'',
-        tiradaJugadorDos:'',
-        turnoPartida:0,
-        jugadorUno:req.body.jugadorUno,
-        jugadorDos:''
+        tiradaJugadorUno: '',
+        tiradaJugadorDos: '',
+        turnoPartida: 0,
+        jugadorUno: req.body.jugadorUno,
+        jugadorDos: ''
     };
-    
+
     partidas.push(partida);  // Agrega la nueva partida al array "partidas"
     res.status(201).send(path.join(__dirname, 'partida.html'));  // Retorna el objeto creado
 });
+
 
 // Eliminar una partida por ID
 app.delete('/api/partida/:id', (req, res) => {
     let partida = partidas.find(p => p.id === req.params.id);
     if (!partida) {
-        console.log('Partida no encontrada');
+        console.log('Partida no trobada');
         return res.status(404).send('Partida no trobada');
     }
 
@@ -80,18 +87,18 @@ app.delete('/api/partida/:id', (req, res) => {
 app.put('/api/partida/:id', (req, res) => {
     const partida = partidas.find(p => p.id === req.params.id);
     if (!partida) {
-        return res.status(404).json({ mensaje: 'Partida no encontrada' });
+        return res.status(404).json({ mensaje: 'Partida no trobada' });
     }
 
     if (partida.jugadorUnoPuntuacion >= 3 || partida.jugadorDosPuntuacion >= 3) {
-        return res.status(400).json({ mensaje: 'La partida ya ha acabado' });
+        return res.status(400).json({ mensaje: 'La partida ja ha acabat' });
     }
 
     const { jugador, tirada } = req.body;
 
     // Validar que sea el turno del jugador correcto
     if (jugador !== partida.turno) {
-        return res.status(400).json({ mensaje: 'No es el turno de este jugador' });
+        return res.status(400).json({ mensaje: 'No es el torn del jugador' });
     }
 
     // Registrar la tirada según el jugador

@@ -19,29 +19,41 @@ document.addEventListener('DOMContentLoaded', () => {
     let jugadorSeleccionado = "";
     
 
-    function creaPartida(partidaIdInput,jugador){
+    function creaPartida(partidaIdInput, jugador) {
         fetch('/api/partida', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ id: partidaIdInput,jugadorUno:jugador}),
+            body: JSON.stringify({ id: partidaIdInput, jugadorUno: jugador }),
         })
         .then(response => {
-            if (!response.ok) throw new Error('Error al crear la partida');
+            if (response.status === 400) {
+                throw new Error('Partida ya creada con ese ID'); // mensaje para partida duplicada
+            }
+            if (!response.ok) {
+                throw new Error('Error al crear la partida'); 
+            }
+            return response.text(); 
+        })
+        .then(() => {
             partidaId = partidaIdInput;
             partidaIdSpan.textContent = partidaId;
             puntuacionSpan.textContent = 'Jugador 1: 0 - Jugador 2: 0';
             controlesPartida.style.display = 'block';
-            jugador1Div.style.display = 'block';  // Mostrar jugador 1 cuando empieza
-            jugador2Div.style.display = 'none';  // Ocultar jugador 2 al principio
+            jugador1Div.style.display = 'block'; 
+            jugador2Div.style.display = 'none';  
         })
         .catch(error => {
             console.error(error);
-            alert('No se pudo crear la partida.');
+            if (error.message === 'Partida ya creada con ese ID') {
+                alert('La partida ya existe con ese ID.');
+            } else {
+                alert('No se pudo crear la partida.');
+            }
         });
-
     }
+    
 
     // Crear partida
     crearPartidaBtn.addEventListener('click', () => {
@@ -166,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => {
                 console.log(error);
-                alert("Error al eliminar la partida: " + error.message);
+                alert(error.message);
             });
         
     }
