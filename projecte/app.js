@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
 });
 
 
-// Ver el estado de todas las partidas
+// Ver el todas las partidas
 app.get('/api/partida/', (req, res) => res.send(partidas));
 
 // Obtener una partida en específico
@@ -43,53 +43,79 @@ app.get('/api/partida/:id', (req, res) => {
  * Se añade desde el cuerpo del mensaje. El resto de valores se inician en 0.
  */
 app.post('/api/partida', (req, res) => {
+    let partidaDuplicada = partidas.find(p => p.id === req.body.id);
+
+    if (partidaDuplicada) {
+        return res.status(400).send("La partida ja existeix"); // Usa `return` para evitar que continúe la ejecución
+    }
+
     let partida = {
-        id: req.body.id,  // Generar ID aleatorio si no se pasa
+        id: req.body.id,
         jugadorUnoPuntuacion: 0,
         jugadorDosPuntuacion: 0,
-        tiradaJugadorUno:'',
-        tiradaJugadorDos:'',
-        turnoPartida:1
+        tiradaJugadorUno: '',
+        tiradaJugadorDos: '',
+        turnoPartida: 0,
+        jugadorUno: req.body.jugadorUno,
+        jugadorDos: ''
     };
-    
+
     partidas.push(partida);  // Agrega la nueva partida al array "partidas"
     res.status(201).send(path.join(__dirname, 'partida.html'));  // Retorna el objeto creado
 });
 
+
 // Eliminar una partida por ID
 app.delete('/api/partida/:id', (req, res) => {
     let partida = partidas.find(p => p.id === req.params.id);
-    if (!partida) return res.status(404).send('Partida no trobada');
-    
+    if (!partida) {
+        console.log('Partida no trobada');
+        return res.status(404).send('Partida no trobada');
+    }
+
     let index = partidas.indexOf(partida);
     partidas.splice(index, 1);
+    console.log('Partida eliminada:', partida);
     res.send('Partida esborrada');
 });
 
-// Modificar una partida existente
+
+// Modificar una tirada y estado de la partida
 /**
  * Toma como @param id el id de la partida. Es un re.param por lo que hay que pasarlo en la ruta de la aplicación
  */
 app.put('/api/partida/:id', (req, res) => {
     const partida = partidas.find(p => p.id === req.params.id);
-    if (!partida) return res.status(404).send('Partida no trobada');
+    if (!partida) {
+        return res.status(404).json({ mensaje: 'Partida no trobada' });
+    }
 
     if (partida.jugadorUnoPuntuacion >= 3 || partida.jugadorDosPuntuacion >= 3) {
-        return res.send("La partida ha acabado");
+        return res.status(400).json({ mensaje: 'La partida ja ha acabat' });
     }
 
-    const { jugador, tirada } = req.body; // 'jugador' indica quién está jugando (1 o 2)
+    const { jugador, tirada } = req.body;
+
+    // Validar que sea el turno del jugador correcto
+    if (jugador !== partida.turno) {
+        return res.status(400).json({ mensaje: 'No es el torn del jugador' });
+    }
+
+    // Registrar la tirada según el jugador
     if (jugador === 1) {
         partida.tiradaJugadorUno = tirada;
+        partida.turno = 2; // Cambiar turno al jugador 2
     } else if (jugador === 2) {
         partida.tiradaJugadorDos = tirada;
+        partida.turno = 1; // Cambiar turno al jugador 1
     } else {
-        return res.status(400).send('Jugador no válido');
+        return res.status(400).json({ mensaje: 'Jugador no válido' });
     }
 
+    // Resolver el turno solo si ambos jugadores han realizado su tirada
     if (partida.tiradaJugadorUno && partida.tiradaJugadorDos) {
-        // Resolver el turno
         const { tiradaJugadorUno: movJ1, tiradaJugadorDos: movJ2 } = partida;
+
         if (movJ1 === movJ2) {
             console.log("Empate");
         } else if (
@@ -104,14 +130,42 @@ app.put('/api/partida/:id', (req, res) => {
             console.log("¡Jugador 2 gana este turno!");
         }
 
-        // Limpiar tiradas y avanzar turno
+        // Reiniciar las tiradas
         partida.tiradaJugadorUno = null;
         partida.tiradaJugadorDos = null;
-        partida.turnoPartida++;
     }
 
-    res.send(`La partida ha sido modificada: puntuación es J1:${partida.jugadorUnoPuntuacion} J2:${partida.jugadorDosPuntuacion}`);
+    res.json({
+        mensaje: 'Tirada registrada correctamente',
+        partida,
+    });
 });
+
+
+
+//Ruta para que el J2 se pueda unir
+
+app.put('/api/partida/:id/unirse', (req, res) => {
+    const partidaId = req.params.id;
+    const jugadorDos = req.body.jugadorDos;
+
+    const partida = partidas.find(p => p.id === partidaId);
+
+    if (!partida) {
+        return res.status(404).json({ error: 'Partida no encontrada' });
+    }
+
+    if (partida.jugadorDos) {
+        return res.status(400).json({ error: 'La partida ya tiene un Jugador 2' });
+    }
+
+    // Asignar Jugador 2
+    partida.jugadorDos = jugadorDos;
+    partida.turno = 1;
+
+    res.json(partida); // Devolver el estado actualizado de la partida
+});
+
 
 
 // Inicio del servidor
